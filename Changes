@@ -1,0 +1,8 @@
+Revision history for Perl extension Net::Packet.
+
+4.00
+
+3.23 Thu Nov 23 23:47:10 CET 2006
+   - examples: updates and bugfixes
+   - tests: bugfix when test modules not available
+
