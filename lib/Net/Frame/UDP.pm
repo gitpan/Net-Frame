@@ -1,5 +1,5 @@
 #
-# $Id: UDP.pm,v 1.4 2006/12/03 16:07:35 gomor Exp $
+# $Id: UDP.pm,v 1.5 2006/12/05 20:23:14 gomor Exp $
 #
 package Net::Frame::UDP;
 use strict;
@@ -52,6 +52,12 @@ sub pack {
       $self->[$__length],
       $self->[$__checksum],
    ) or return undef;
+
+   if ($self->[$__payload]) {
+      $self->[$__raw] =
+         $self->[$__raw].$self->SUPER::pack('a*', $self->[$__payload])
+            or return undef;
+   }
 
    $self->[$__raw];
 }

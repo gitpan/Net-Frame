@@ -11,28 +11,31 @@ use Net::Write::Layer3;
 use Net::Frame::Simple;
 use Net::Frame::Dump::Online;
 
-use Net::Frame::IPv4;
-use Net::Frame::TCP;
+use Net::Frame::IPv4 qw(:consts);
+use Net::Frame::UDP;
 
 my $oDevice = Net::Frame::Device->new(target => $target);
 
 my $ip4 = Net::Frame::IPv4->new(
    src => $oDevice->ip,
    dst => $target,
+   protocol => NP_IPv4_PROTOCOL_UDP,
 );
-my $tcp = Net::Frame::TCP->new(
+my $udp = Net::Frame::UDP->new(
    dst     => $port,
-   options => "\x02\x04\x54\x0b",
    payload => 'test',
 );
 
 my $oWrite = Net::Write::Layer3->new(dst => $target);
 
-my $oDump = Net::Frame::Dump::Online->new(dev => $oDevice->dev);
+my $oDump = Net::Frame::Dump::Online->new(
+   dev    => $oDevice->dev,
+   filter => 'udp or icmp',
+);
 $oDump->start;
 
 my $oSimple = Net::Frame::Simple->new(
-   layers => [ $ip4, $tcp ],
+   layers => [ $ip4, $udp ],
 );
 $oWrite->open;
 $oSimple->send($oWrite);

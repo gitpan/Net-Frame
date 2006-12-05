@@ -4,6 +4,7 @@ examples/build-tcp-syn.pl
 examples/pack-eth-ipv4-tcp-compute.pl
 examples/pack-eth-ipv4-tcp.pl
 examples/send-recv-tcp.pl
+examples/send-recv-udp.pl
 examples/send-tcp-with-padding.pl
 examples/send-tcp-with-payload.pl
 examples/unpack-eth-ipv4-tcp.pl

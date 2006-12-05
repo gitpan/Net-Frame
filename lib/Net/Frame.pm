@@ -1,5 +1,5 @@
 #
-# $Id: Frame.pm,v 1.2 2006/12/03 16:07:15 gomor Exp $
+# $Id: Frame.pm,v 1.3 2006/12/05 20:22:49 gomor Exp $
 #
 package Net::Frame;
 use strict;
@@ -7,7 +7,7 @@ use warnings;
 
 require v5.6.1;
 
-our $VERSION = '1.00_01';
+our $VERSION = '1.00_02';
 
 1;
 

@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Net-Frame
-version:             1.00_01
+version:             1.00_02
 abstract:            the base framework for frame crafting
 license:             Artistic
 generated_by:        ExtUtils::MakeMaker version 6.31
