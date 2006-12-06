@@ -1,5 +1,5 @@
 #
-# $Id: RAW.pm,v 1.3 2006/12/03 16:07:35 gomor Exp $
+# $Id: RAW.pm,v 1.4 2006/12/06 21:19:48 gomor Exp $
 #
 package Net::Frame::RAW;
 use strict;
@@ -109,6 +109,12 @@ Packs all attributes into a raw format, in order to inject to network. Returns 1
 =item B<unpack>
 
 Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
+
+=item B<encapsulate>
+
+=item B<getLength>
+
+=item B<print>
 
 =back
 

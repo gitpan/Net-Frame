@@ -1,5 +1,5 @@
 #
-# $Id: TCP.pm,v 1.4 2006/12/03 16:07:35 gomor Exp $
+# $Id: TCP.pm,v 1.5 2006/12/06 21:20:38 gomor Exp $
 #
 package Net::Frame::TCP;
 use strict;
@@ -12,14 +12,14 @@ our @ISA = qw(Net::Frame::Layer Exporter);
 our %EXPORT_TAGS = (
    consts => [qw(
       NP_TCP_HDR_LEN
-      NP_TCP_FLAG_FIN
-      NP_TCP_FLAG_SYN
-      NP_TCP_FLAG_RST
-      NP_TCP_FLAG_PSH
-      NP_TCP_FLAG_ACK
-      NP_TCP_FLAG_URG
-      NP_TCP_FLAG_ECE
-      NP_TCP_FLAG_CWR
+      NP_TCP_FLAGS_FIN
+      NP_TCP_FLAGS_SYN
+      NP_TCP_FLAGS_RST
+      NP_TCP_FLAGS_PSH
+      NP_TCP_FLAGS_ACK
+      NP_TCP_FLAGS_URG
+      NP_TCP_FLAGS_ECE
+      NP_TCP_FLAGS_CWR
    )],
 );
 our @EXPORT_OK = (
@@ -27,14 +27,14 @@ our @EXPORT_OK = (
 );
 
 use constant NP_TCP_HDR_LEN  => 20;
-use constant NP_TCP_FLAG_FIN => 0x01;
-use constant NP_TCP_FLAG_SYN => 0x02;
-use constant NP_TCP_FLAG_RST => 0x04;
-use constant NP_TCP_FLAG_PSH => 0x08;
-use constant NP_TCP_FLAG_ACK => 0x10;
-use constant NP_TCP_FLAG_URG => 0x20;
-use constant NP_TCP_FLAG_ECE => 0x40;
-use constant NP_TCP_FLAG_CWR => 0x80;
+use constant NP_TCP_FLAGS_FIN => 0x01;
+use constant NP_TCP_FLAGS_SYN => 0x02;
+use constant NP_TCP_FLAGS_RST => 0x04;
+use constant NP_TCP_FLAGS_PSH => 0x08;
+use constant NP_TCP_FLAGS_ACK => 0x10;
+use constant NP_TCP_FLAGS_URG => 0x20;
+use constant NP_TCP_FLAGS_ECE => 0x40;
+use constant NP_TCP_FLAGS_CWR => 0x80;
 
 our @AS = qw(
    src
@@ -65,7 +65,7 @@ sub new {
       ack      => 0,
       x2       => 0,
       off      => 0,
-      flags    => NP_TCP_FLAG_SYN,
+      flags    => NP_TCP_FLAGS_SYN,
       win      => 0xffff,
       checksum => 0,
       urp      => 0,
@@ -202,7 +202,7 @@ sub match {
    my $self = shift;
    my ($with) = @_;
       ($with->[$__ack] == $self->[$__seq] + 1)
-   || ($with->[$__flags] & NP_TCP_FLAG_RST);
+   || ($with->[$__flags] & NP_TCP_FLAGS_RST);
 }
 
 sub getKey {
@@ -236,20 +236,6 @@ sub print {
 
    $buf;
 }
-
-#
-# Helpers
-#
-
-sub _haveFlag   { (shift->[$__flags] & shift) ? 1 : 0 }
-sub haveFlagFin { shift->_haveFlag(NP_TCP_FLAG_FIN)   }
-sub haveFlagSyn { shift->_haveFlag(NP_TCP_FLAG_SYN)   }
-sub haveFlagRst { shift->_haveFlag(NP_TCP_FLAG_RST)   }
-sub haveFlagPsh { shift->_haveFlag(NP_TCP_FLAG_PSH)   }
-sub haveFlagAck { shift->_haveFlag(NP_TCP_FLAG_ACK)   }
-sub haveFlagUrg { shift->_haveFlag(NP_TCP_FLAG_URG)   }
-sub haveFlagEce { shift->_haveFlag(NP_TCP_FLAG_ECE)   }
-sub haveFlagCwr { shift->_haveFlag(NP_TCP_FLAG_CWR)   }
 
 1;
 
@@ -354,7 +340,7 @@ x2:       0
 
 off:      0
 
-flags:    NP_TCP_FLAG_SYN
+flags:    NP_TCP_FLAGS_SYN
 
 win:      0xffff
 
@@ -384,23 +370,23 @@ Returns the header length in bytes, not including TCP options.
 
 Returns options length in bytes.
 
-=item B<haveFlagFin>
+=item B<computeChecksums>
 
-=item B<haveFlagSyn>
+=item B<computeLengths>
 
-=item B<haveFlagRst>
+=item B<encapsulate>
 
-=item B<haveFlagPsh>
+=item B<getKey>
 
-=item B<haveFlagAck>
+=item B<getKeyReverse>
 
-=item B<haveFlagUrg>
+=item B<match>
 
-=item B<haveFlagEce>
+=item B<getLength>
 
-=item B<haveFlagCwr>
+=item B<getPayloadLength>
 
-Returns 1 if the specified TCP flag is set in B<flags> attribute, 0 otherwise.
+=item B<print>
 
 =back
 
@@ -410,23 +396,23 @@ Load them: use Net::Packet::Consts qw(:tcp);
 
 =over 4
 
-=item B<NP_TCP_FLAG_FIN>
+=item B<NP_TCP_FLAGS_FIN>
 
-=item B<NP_TCP_FLAG_SYN>
+=item B<NP_TCP_FLAGS_SYN>
 
-=item B<NP_TCP_FLAG_RST>
+=item B<NP_TCP_FLAGS_RST>
 
-=item B<NP_TCP_FLAG_PSH>
+=item B<NP_TCP_FLAGS_PSH>
 
-=item B<NP_TCP_FLAG_ACK>
+=item B<NP_TCP_FLAGS_ACK>
 
-=item B<NP_TCP_FLAG_URG>
+=item B<NP_TCP_FLAGS_URG>
 
-=item B<NP_TCP_FLAG_ECE>
+=item B<NP_TCP_FLAGS_ECE>
 
-=item B<NP_TCP_FLAG_CWR>
+=item B<NP_TCP_FLAGS_CWR>
 
-TCP flag constants.
+TCP flags constants.
 
 =back
 

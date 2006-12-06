@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.PL,v 1.2 2006/12/03 16:02:39 gomor Exp $
+# $Id: Makefile.PL,v 1.3 2006/12/06 21:17:04 gomor Exp $
 #
 use ExtUtils::MakeMaker;
 
@@ -14,5 +14,6 @@ WriteMakefile(
       Socket6       => 0,
       Net::Libdnet  => 0,
       Net::IPv6Addr => 0,
+      Bit::Vector   => 0,
    },
 );

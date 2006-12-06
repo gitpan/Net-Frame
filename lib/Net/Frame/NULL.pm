@@ -1,5 +1,5 @@
 #
-# $Id: NULL.pm,v 1.3 2006/12/03 16:07:35 gomor Exp $
+# $Id: NULL.pm,v 1.4 2006/12/06 21:19:27 gomor Exp $
 #
 package Net::Frame::NULL;
 use strict;
@@ -78,15 +78,6 @@ sub print {
    sprintf "$l: type:0x%04x", $self->type;
 }
 
-#
-# Helpers
-#
-
-sub _isType    { shift->[$__type] == shift()                              }
-sub isTypeIpv4 { shift->_isType(NP_NULL_TYPE_IPv4)                        }
-sub isTypeIpv6 { shift->_isType(NP_NULL_TYPE_IPv6)                        }
-sub isTypeIp   { my $self = shift; $self->isTypeIpv4 || $self->isTypeIpv6 }
-
 1;
 
 __END__
@@ -150,13 +141,11 @@ Packs all attributes into a raw format, in order to inject to network. Returns 1
 
 Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
 
-=item B<isTypeIpv4>
+=item B<encapsulate>
 
-=item B<isTypeIpv6>
+=item B<getLength>
 
-=item B<isTypeIp> - is type IPv4 or IPv6
-
-Helper methods. Return true is the encapsulated layer is of specified type, false otherwise.
+=item B<print>
 
 =back
 

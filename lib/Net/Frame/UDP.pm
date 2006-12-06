@@ -1,5 +1,5 @@
 #
-# $Id: UDP.pm,v 1.5 2006/12/05 20:23:14 gomor Exp $
+# $Id: UDP.pm,v 1.6 2006/12/06 21:20:51 gomor Exp $
 #
 package Net::Frame::UDP;
 use strict;
@@ -234,6 +234,22 @@ Unpacks raw data from network and stores attributes into the object. Returns 1 o
 =item B<getPayloadLength>
 
 Returns the length in bytes of payload (layer 7 object).
+
+=item B<computeChecksums>
+
+=item B<computeLengths>
+
+=item B<encapsulate>
+
+=item B<getKey>
+
+=item B<getKeyReverse>
+
+=item B<match>
+
+=item B<getLength>
+
+=item B<print>
 
 =back
 

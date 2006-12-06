@@ -1,5 +1,5 @@
 #
-# $Id: SLL.pm,v 1.6 2006/12/03 16:07:35 gomor Exp $
+# $Id: SLL.pm,v 1.7 2006/12/06 21:20:02 gomor Exp $
 #
 package Net::Frame::SLL;
 use strict;
@@ -180,17 +180,6 @@ sub print {
       $self->[$__addressLength], $self->[$__source], $self->[$__protocol];
 }
 
-#
-# Helpers
-#
-
-sub _isProtocol    { shift->[$__protocol] == shift()          }
-sub isProtocolIpv4 { shift->_isProtocol(NP_SLL_PROTOCOL_IPv4) }
-sub isProtocolIpv6 { shift->_isProtocol(NP_SLL_PROTOCOL_IPv6) }
-sub isProtocolIp   {
-   my $self = shift; $self->isProtocolIpv4 || $self->isProtocolIpv6;
-}
-
 1;
 
 __END__
@@ -278,13 +267,11 @@ Packs all attributes into a raw format, in order to inject to network. Returns 1
 
 Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
 
-=item B<isProtocolIpv4>
+=item B<encapsulate>
 
-=item B<isProtocolIpv6>
+=item B<getLength>
 
-=item B<isProtocolIp> - is type IPv4 or IPv6
-
-Helper methods. Return true is the encapsulated layer is of specified type, false otherwise.
+=item B<print>
 
 =back
 

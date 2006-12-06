@@ -1,5 +1,5 @@
 #
-# $Id: IPv4.pm,v 1.6 2006/12/03 16:07:35 gomor Exp $
+# $Id: IPv4.pm,v 1.7 2006/12/06 21:19:00 gomor Exp $
 #
 package Net::Frame::IPv4;
 use strict;
@@ -112,6 +112,7 @@ no strict 'vars';
 
 use Carp;
 use Net::Frame::Utils qw(getRandom16bitsInt inetAton inetNtoa inetChecksum);
+use Bit::Vector;
 
 sub _fixLenBsd   { pack('v', shift) }
 sub _fixLenOther { pack('n', shift) }
@@ -139,20 +140,25 @@ sub new {
 sub pack {
    my $self = shift;
 
-   # Thank you Stephanie Wehner
-   my $hlenVer  = ($self->[$__hlen] & 0x0f)|(($self->[$__version] << 4) & 0xf0);
-   my $flags    = $self->[$__flags];
-   my $offset   = $self->[$__offset];
+   # Here, we pack in this order: version, hlen (4 bits each)
+   my $version = Bit::Vector->new_Dec(4, $self->[$__version]);
+   my $hlen    = Bit::Vector->new_Dec(4, $self->[$__hlen]);
+   my $v8      = $version->Concat_List($hlen);
+
+   # Here, we pack in this order: flags (3 bits), offset (13 bits)
+   my $flags  = Bit::Vector->new_Dec(3,  $self->[$__flags]);
+   my $offset = Bit::Vector->new_Dec(13, $self->[$__offset]);
+   my $v16    = $flags->Concat_List($offset);
 
    my $len = ($self->[$__noFixLen] ? _fixLenOther($self->[$__length])
                                    : _fixLen($self->[$__length]));
 
    $self->[$__raw] = $self->SUPER::pack('CCa*nnCCna4a4',
-      $hlenVer,
+      $v8->to_Dec,
       $self->[$__tos],
       $len,
       $self->[$__id],
-      $flags << 13 | $offset,
+      $v16->to_Dec,
       $self->[$__ttl],
       $self->[$__protocol],
       $self->[$__checksum],
@@ -173,17 +179,22 @@ sub pack {
 sub unpack {
    my $self = shift;
 
-   my ($verHlen, $tos, $len, $id, $flags, $ttl, $proto, $cksum, $src, $dst,
-      $payload) = $self->SUPER::unpack('CCnnnCCna4a4 a*', $self->[$__raw])
+   my ($verHlen, $tos, $len, $id, $flagsOffset, $ttl, $proto, $cksum, $src,
+      $dst, $payload) = $self->SUPER::unpack('CCnnnCCna4a4 a*', $self->[$__raw])
          or return undef;
 
-   $self->[$__version]  = ($verHlen & 0xf0) >> 4;
-   $self->[$__hlen]     = $verHlen & 0x0f;
+   my $v8  = Bit::Vector->new_Dec(8,  $verHlen);
+   my $v16 = Bit::Vector->new_Dec(16, $flagsOffset); 
+
+   # Here, we unpack in this order: hlen, version (4 bits each)
+   $self->[$__hlen]     = $v8->Chunk_Read(4, 0);
+   $self->[$__version]  = $v8->Chunk_Read(4, 4);
    $self->[$__tos]      = $tos;
    $self->[$__length]   = $len;
    $self->[$__id]       = $id;
-   $self->[$__flags]    = $flags >> 13;
-   $self->[$__offset]   = $flags & 0x1fff;
+   # Here, we unpack in this order: offset (13 bits), flags (3 bits)
+   $self->[$__offset]   = $v16->Chunk_Read(13,  0);
+   $self->[$__flags]    = $v16->Chunk_Read( 3, 13);
    $self->[$__ttl]      = $ttl;
    $self->[$__protocol] = $proto;
    $self->[$__checksum] = $cksum;
@@ -311,23 +322,6 @@ sub print {
 
    $buf;
 }
-
-#
-# Helpers
-#
-
-sub _haveFlag  { (shift->[$__flags] & shift()) ? 1 : 0       }
-sub haveFlagDf { shift->_haveFlag(NP_IPv4_DONT_FRAGMENT)     }
-sub haveFlagMf { shift->_haveFlag(NP_IPv4_MORE_FRAGMENT)     }
-sub haveFlagRf { shift->_haveFlag(NP_IPv4_RESERVED_FRAGMENT) }
-
-sub _isProtocol      { shift->[$__protocol] == shift()             }
-sub isProtocolTcp    { shift->_isProtocol(NP_IPv4_PROTOCOL_TCP)    }
-sub isProtocolUdp    { shift->_isProtocol(NP_IPv4_PROTOCOL_UDP)    }
-sub isProtocolIcmpv4 { shift->_isProtocol(NP_IPv4_PROTOCOL_ICMPv4) }
-sub isProtocolIpv6   { shift->_isProtocol(NP_IPv4_PROTOCOL_IPv6)   }
-sub isProtocolOspf   { shift->_isProtocol(NP_IPv4_PROTOCOL_OSPF)   }
-sub isProtocolIgmpv4 { shift->_isProtocol(NP_IPv4_PROTOCOL_IGMPv4) }
 
 1;
 
@@ -483,27 +477,19 @@ Returns the length in bytes of encapsulated layers (that is, layer 4 + layer 7).
 
 Returns the length in bytes of IP options.
 
-=item B<haveFlagDf>
+=item B<computeChecksums>
 
-=item B<haveFlagMf>
+=item B<computeLengths>
 
-=item B<haveFlagRf>
+=item B<encapsulate>
 
-Returns 1 if the specified flag is set in B<flags> attribute, 0 otherwise.
+=item B<getKey>
 
-=item B<isProtocolTcp>
+=item B<getKeyReverse>
 
-=item B<isProtocolUdp>
+=item B<getLength>
 
-=item B<isProtocolIpv6>
-
-=item B<isProtocolOspf>
-
-=item B<isProtocolIgmpv4>
-
-=item B<isProtocolIcmpv4>
-
-Returns 1 if the specified protocol is used at layer 4, 0 otherwise.
+=item B<print>
 
 =back
 

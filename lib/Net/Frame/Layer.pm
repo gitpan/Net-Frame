@@ -1,5 +1,5 @@
 #
-# $Id: Layer.pm,v 1.6 2006/12/03 16:07:35 gomor Exp $
+# $Id: Layer.pm,v 1.7 2006/12/06 21:19:12 gomor Exp $
 #
 package Net::Frame::Layer;
 use strict;
@@ -112,6 +112,8 @@ Stores what is not part of the layer, that is the encapsulated part to be decode
 
 =over 4
 
+=item B<new>
+
 =item B<is>
 
 Returns the string describing the layer type (example: 'IPv4').
@@ -138,12 +140,6 @@ Just returns a string in a human readable format describing attributes found in 
 
 Just returns a string in hexadecimal format which is how the layer appears on the network.
 
-=item B<getKey>
-
-=item B<getKeyReverse>
-
-These methods are used to respectively store and retrieve analyzed frames respectively to and from a hashref. This is to make it quick to get possible responses from a probe.
-
 =item B<pack>
 
 Will pack all attributes into raw network format. This method MUST be implemented into each supported layers.
@@ -159,16 +155,6 @@ Returns the layer length in bytes.
 =item B<getPayloadLength>
 
 Returns the total length of remaining raw data in bytes (without calling layer length).
-
-=item B<isLayer2>
-
-=item B<isLayer3>
-
-=item B<isLayer4>
-
-=item B<isLayer7>
-
-Returns true if the calling object is, respectively, layer 2, 3, 4 or 7.
 
 =back
 

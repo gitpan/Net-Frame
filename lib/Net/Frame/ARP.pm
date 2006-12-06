@@ -1,5 +1,5 @@
 #
-# $Id: ARP.pm,v 1.2 2006/12/03 16:07:35 gomor Exp $
+# $Id: ARP.pm,v 1.3 2006/12/06 21:17:49 gomor Exp $
 #
 package Net::Frame::ARP;
 use strict;
@@ -145,14 +145,6 @@ sub print {
          $self->[$__srcIp], $self->[$__dst],  $self->[$__dstIp];
 }
 
-#
-# Helpers
-#
-
-sub _isOpCode { shift->[$__opCode] == shift             }
-sub isRequest { shift->_isOpCode(NP_ARP_OPCODE_REQUEST) }
-sub isReply   { shift->_isOpCode(NP_ARP_OPCODE_REPLY)   }
-
 1;
 
 __END__
@@ -261,11 +253,13 @@ Unpacks raw data from network and stores attributes into the object. Returns 1 o
 
 Will search for a matching replies in B<framesSorted> or B<frames> from a B<Net::Packet::Dump> object.
 
-=item B<isRequest>
+=item B<encapsulate>
 
-=item B<isReply>
+=item B<getLength>
 
-Returns 1 if the B<opCode> attribute is of specified type.
+=item B<match>
+
+=item B<print>
 
 =back
 

@@ -1,5 +1,5 @@
 #
-# $Id: ETH.pm,v 1.5 2006/12/03 16:07:35 gomor Exp $
+# $Id: ETH.pm,v 1.6 2006/12/06 21:18:18 gomor Exp $
 #
 package Net::Frame::ETH;
 use strict;
@@ -276,19 +276,11 @@ Packs all attributes into a raw format, in order to inject to network. Returns 1
 
 Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
 
-=item B<isTypeArp>
+=item B<encapsulate>
 
-=item B<isTypeIpv4>
+=item B<getLength>
 
-=item B<isTypeIpv6>
-
-=item B<isTypeIp> - is type IPv4 or IPv6
-
-=item B<isTypeVlan>
-
-=item B<isTypePppoe>
-
-Helper methods. Return true is the encapsulated layer is of specified type, false otherwise. 
+=item B<print>
 
 =back
 
