@@ -1,5 +1,5 @@
 #
-# $Id: Layer.pm,v 1.7 2006/12/06 21:19:12 gomor Exp $
+# $Id: Layer.pm,v 1.10 2006/12/09 16:31:48 gomor Exp $
 #
 package Net::Frame::Layer;
 use strict;
@@ -11,16 +11,33 @@ our @ISA = qw(Class::Gomor::Array Exporter);
 
 our %EXPORT_TAGS = (
    consts => [qw(
-      NP_LAYER_NONE
-      NP_LAYER_UNKNOWN
+      NF_LAYER_NONE
+      NF_LAYER_UNKNOWN
+      NF_LAYER_NOT_AVAILABLE 
+   )],
+   subs => [qw(
+      getHostIpv4Addr
+      getHostIpv4Addrs
+      getHostIpv6Addr
+      inetAton
+      inetNtoa
+      inet6Aton
+      inet6Ntoa
+      getRandomHighPort
+      getRandom32bitsInt
+      getRandom16bitsInt
+      convertMac
+      inetChecksum
    )],
 );
 our @EXPORT_OK = (
    @{$EXPORT_TAGS{consts}},
+   @{$EXPORT_TAGS{subs}},
 );
 
-use constant NP_LAYER_NONE    => undef;
-use constant NP_LAYER_UNKNOWN => 'UNKNOWN';
+use constant NF_LAYER_NONE          => 0;
+use constant NF_LAYER_UNKNOWN       => 1;
+use constant NF_LAYER_NOT_AVAILABLE => 2;
 
 our @AS = qw(
    raw
@@ -34,7 +51,7 @@ no strict 'vars';
 
 use Carp;
 
-sub new { shift->SUPER::new(nextLayer => NP_LAYER_UNKNOWN, @_) }
+sub new { shift->SUPER::new(nextLayer => NF_LAYER_NONE, @_) }
 
 sub layer {
    my $layer = ref(shift);
@@ -66,18 +83,100 @@ sub getPayloadLength {
    $self->payload ? length($self->payload) : 0;
 }
 
-sub encapsulate      { NP_LAYER_NONE                 }
+sub encapsulate      { shift->nextLayer              }
 sub computeLengths   { 1                             }
 sub computeChecksums { 1                             }
 sub print            { $self->layer.': to implement' }
 sub getLength        { 0                             }
 
-sub dump {
-   my $self = shift;
+sub dump { CORE::unpack('H*', shift->raw) }
 
-   my $hex = CORE::unpack('H*', $self->raw);
-   my $l = $self->layer;
-   sprintf "$l: $hex";
+#
+# Useful subroutines
+#
+
+use Socket;
+use Socket6 qw(NI_NUMERICHOST NI_NUMERICSERV inet_pton inet_ntop);
+require Net::Libdnet;
+require Net::IPv6Addr;
+
+sub getHostIpv4Addr {
+   my ($name) = @_;
+
+   return undef unless $name;
+   return $name if $name =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+
+   my @addrs = (gethostbyname($name))[4];
+   @addrs ? return join('.', CORE::unpack('C4', $addrs[0]))
+          : carp("@{[(caller(0))[3]]}: unable to resolv `$name' hostname\n");
+   return undef;
+}
+
+sub getHostIpv4Addrs {
+   my ($name) = @_;
+
+   return undef unless $name;
+   return $name if $name =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+
+   my @addrs = (gethostbyname($name))[4];
+   @addrs ? return @addrs
+          : carp("@{[(caller(0))[3]]}: unable to resolv `$name' hostname\n");
+   return ();
+}
+
+sub getHostIpv6Addr {
+   my ($name) = @_;
+
+   return undef unless $name;
+   return $name if Net::IPv6Addr::is_ipv6($name);
+
+   my @res = getaddrinfo($name, 'ssh', AF_INET6, SOCK_STREAM);
+   if (@res >= 5) {
+      my ($ipv6) = getnameinfo($res[3], NI_NUMERICHOST | NI_NUMERICSERV);
+      $ipv6 =~ s/%.*$//;
+      return $ipv6;
+   }
+   else {
+      carp("@{[(caller(0))[3]]}: unable to resolv `$name' hostname\n");
+   }
+   undef;
+}
+
+sub inetAton  { inet_aton(shift())           }
+sub inetNtoa  { inet_ntoa(shift())           }
+sub inet6Aton { inet_pton(AF_INET6, shift()) }
+sub inet6Ntoa { inet_ntop(AF_INET6, shift()) }
+
+sub getRandomHighPort {
+   my $highPort = int rand 0xffff;
+   $highPort += 1024 if $highPort < 1025;
+   $highPort;
+}
+
+sub getRandom32bitsInt { int rand 0xffffffff }
+sub getRandom16bitsInt { int rand 0xffff     }
+
+sub convertMac {
+   my ($mac) = @_;
+   $mac =~ s/(..)/$1:/g;
+   $mac =~ s/:$//;
+   lc($mac);
+}
+
+sub inetChecksum {
+   my ($phpkt) = @_;
+
+   $phpkt      .= "\x00" if length($phpkt) % 2;
+   my $len      = length $phpkt;
+   my $nshort   = $len / 2;
+   my $checksum = 0;
+   $checksum   += $_ for CORE::unpack("S$nshort", $phpkt);
+   $checksum   += CORE::unpack('C', substr($phpkt, $len - 1, 1)) if $len % 2;
+   $checksum    = ($checksum >> 16) + ($checksum & 0xffff);
+
+   CORE::unpack('n',
+      CORE::pack('S', ~(($checksum >> 16) + $checksum) & 0xffff),
+   );
 }
 
 1;
@@ -90,9 +189,7 @@ Net::Frame::Layer - base class for all layer objects
 
 =head1 DESCRIPTION
 
-This is the base class for B<Net::Packet::Layer2>, B<Net::Packet::Layer3>, B<Net::Packet::Layer4> and B<Net::Packet::Layer7> modules.
-
-It just provides those layers with inheritable attributes and methods.
+This is the base class for all other layer modules. It provides those layers with inheritable attributes, methods, constants and useful subroutines.
 
 =head1 ATTRIBUTES
 
@@ -106,6 +203,10 @@ Stores the raw layer (as captured from the network, or packed to send to network
 
 Stores what is not part of the layer, that is the encapsulated part to be decoded by upper layers.
 
+=item B<nextLayer>
+
+User definable next layer. It may be used to define custom protocols.
+
 =back
 
 =head1 METHODS
@@ -114,23 +215,41 @@ Stores what is not part of the layer, that is the encapsulated part to be decode
 
 =item B<new>
 
-=item B<is>
+=item B<new> (hash)
 
-Returns the string describing the layer type (example: 'IPv4').
+Object constructor.
 
 =item B<layer>
 
-Returns the string describing the layer number (example: 'L3' for IPv4).
-
-=item B<encapsulate>
-
-Returns the next layer type (parsed from payload). This is the same string as returned by B<is> method.
+Returns the string describing the layer (example: 'IPv4' for a B<Net::Frame::IPv4> object).
 
 =item B<computeLengths>
 
 =item B<computeChecksums>
 
-Generally, when a layer is built, some attributes are not yet known until the full Net::Packet::Frame is assembled. Those methods computes various lengths and checksums attributes found in a specific layer. Return 1 on success, undef otherwise.
+Generally, when a layer is built, some attributes are not yet known until all layers that will be assembled are known. Those methods computes various lengths and checksums attributes found in a specific layer. Return 1 on success, undef otherwise. The usage depends from layer to layer, so see related documentation.
+
+Also note that in most cases, you will need to call B<computeLength> before B<computeChecksums>, because checksums may depend upon lengths.
+
+=item B<pack>
+
+Packs all attributes into a raw format, in order to inject to network. Returns the raw packed string on success, undef otherwise. Result is stored into B<raw> attribute.
+
+=item B<unpack>
+
+Unpacks raw data from network and stores attributes into the object. Returns B<$self> on success, undef otherwise.
+
+=item B<encapsulate>
+
+Returns the next layer type (parsed from payload). This is the same string as returned by B<layer> method.
+
+=item B<getLength>
+
+Returns the layer length in bytes.
+
+=item B<getPayloadLength>
+
+Returns the length of layer's payload in bytes.
 
 =item B<print>
 
@@ -140,93 +259,71 @@ Just returns a string in a human readable format describing attributes found in 
 
 Just returns a string in hexadecimal format which is how the layer appears on the network.
 
-=item B<pack>
+=back
 
-Will pack all attributes into raw network format. This method MUST be implemented into each supported layers.
+=head1 USEFUL SUBROUTINES
 
-=item B<unpack>
+Load them: use Net::Frame::Layer qw(:subs);
 
-Will unpack raw network format to respective attributes. This method MUST be implemented into each supported layers.
+=over 4
 
-=item B<getLength>
+=item B<getHostIpv4Addr> (hostname)
 
-Returns the layer length in bytes.
+Resolves IPv4 address of specified hostname.
 
-=item B<getPayloadLength>
+=item B<getHostIpv4Addrs> (hostname)
 
-Returns the total length of remaining raw data in bytes (without calling layer length).
+Same as above, but returns an array of IPv4 addresses.
+
+=item B<getHostIpv6Addr> (hostname)
+
+Resolves IPv6 address of specified hostname.
+
+=item B<inet6Aton> (IPv6 address)
+
+Takes IPv6 address and returns the network form.
+
+=item B<inet6Ntoa> (IPv6 network form)
+
+Takes IPv6 address in network format, and returns the IPv6 human form.
+
+=item B<inetAton> (IPv4 address)
+
+=item B<inetNtoa> (IPv4 network form)
+
+Same as for IPv6, but for IPv4 addresses.
+
+=item B<convertMac> (MAC network form)
+
+Takes a MAC address from network form, and returns the human form.
+
+=item B<getRandom16bitsInt>
+
+=item B<getRandom32bitsInt>
+
+Returns respectively a random 16 bits integer, and a random 32 bits integer.
+
+=item B<getRandomHighPort>
+
+Returns a random high port (> 1024).
+
+=item B<inetChecksum> (pseudo header format)
+
+Will take a frame in pseudo header format, and compute the INET checksum.
 
 =back
 
 =head1 CONSTANTS
 
-Load them: use Net::Packet::Consts qw(:layer);
+Load them: use Net::Frame::Layer qw(:consts);
 
 =over 4
 
-=item B<NP_LAYER>
+=item B<NF_LAYER_NONE>
 
-Base layer string.
+=item B<NF_LAYER_UNKNOWN>
 
-=item B<NP_LAYER_ETH>
-
-=item B<NP_LAYER_NULL>
-
-=item B<NP_LAYER_RAW>
-
-=item B<NP_LAYER_SLL>
-
-Layer 2 strings.
-
-=item B<NP_LAYER_ARP>
-
-=item B<NP_LAYER_IPv4>
-
-=item B<NP_LAYER_IPv6>
-
-=item B<NP_LAYER_VLAN>
-
-=item B<NP_LAYER_PPPoE>
-
-=item B<NP_LAYER_PPP>
-
-=item B<NP_LAYER_LLC>
-
-Layer 3 strings.
-
-=item B<NP_LAYER_TCP>
-
-=item B<NP_LAYER_UDP>
-
-=item B<NP_LAYER_ICMPv4>
-
-=item B<NP_LAYER_PPPLCP>
-
-=item B<NP_LAYER_CDP>
-
-Layer 4 strings.
-
-=item B<NP_LAYER_7>
-
-Layer 7 string.
-
-=item B<NP_LAYER_NONE>
-
-=item B<NP_LAYER_UNKNOWN>
-
-Other strings.
-
-=item B<NP_LAYER_N_2>
-
-=item B<NP_LAYER_N_3>
-
-=item B<NP_LAYER_N_4>
-
-=item B<NP_LAYER_N_7>
-
-=item B<NP_LAYER_N_UNKNOWN>
-
-Layer number N strings.
+=item B<NF_LAYER_NOT_AVAILABLE>
 
 =back
 

@@ -1,5 +1,5 @@
 #
-# $Id: NULL.pm,v 1.4 2006/12/06 21:19:27 gomor Exp $
+# $Id: NULL.pm,v 1.8 2006/12/09 17:32:06 gomor Exp $
 #
 package Net::Frame::NULL;
 use strict;
@@ -11,20 +11,54 @@ our @ISA = qw(Net::Frame::Layer Exporter);
 
 our %EXPORT_TAGS = (
    consts => [qw(
-      NP_NULL_HDR_LEN
-      NP_NULL_TYPE_USER
-      NP_NULL_TYPE_IPv4
-      NP_NULL_TYPE_IPv6
+      NF_NULL_HDR_LEN
+      NF_NULL_TYPE_IPv4
+      NF_NULL_TYPE_ARP
+      NF_NULL_TYPE_CGMP
+      NF_NULL_TYPE_80211
+      NF_NULL_TYPE_DDP
+      NF_NULL_TYPE_AARP
+      NF_NULL_TYPE_WCP
+      NF_NULL_TYPE_8021Q
+      NF_NULL_TYPE_IPX
+      NF_NULL_TYPE_STP
+      NF_NULL_TYPE_IPv6
+      NF_NULL_TYPE_WLCCP
+      NF_NULL_TYPE_PPPoED
+      NF_NULL_TYPE_PPPoES
+      NF_NULL_TYPE_8021X
+      NF_NULL_TYPE_AoE
+      NF_NULL_TYPE_LLDP
+      NF_NULL_TYPE_LOOP
+      NF_NULL_TYPE_VLAN
+      NF_NULL_TYPE_ETH
    )],
 );
 our @EXPORT_OK = (
    @{$EXPORT_TAGS{consts}},
 );
 
-use constant NP_NULL_HDR_LEN   => 4;
-use constant NP_NULL_TYPE_USER => 0x00000000;
-use constant NP_NULL_TYPE_IPv4 => 0x02000000;
-use constant NP_NULL_TYPE_IPv6 => 0x1c000000;
+use constant NF_NULL_HDR_LEN      => 4;
+use constant NF_NULL_TYPE_IPv4    => 0x02000000;
+use constant NF_NULL_TYPE_ARP     => 0x06080000;
+use constant NF_NULL_TYPE_CGMP    => 0x01200000;
+use constant NF_NULL_TYPE_80211   => 0x52240000;
+use constant NF_NULL_TYPE_DDP     => 0x9b800000;
+use constant NF_NULL_TYPE_AARP    => 0xf3800000;
+use constant NF_NULL_TYPE_WCP     => 0xff800000;
+use constant NF_NULL_TYPE_8021Q   => 0x00810000;
+use constant NF_NULL_TYPE_IPX     => 0x37810000;
+use constant NF_NULL_TYPE_STP     => 0x81810000;
+use constant NF_NULL_TYPE_IPv6    => 0x1c000000;
+use constant NF_NULL_TYPE_WLCCP   => 0x2d870000;
+use constant NF_NULL_TYPE_PPPoED  => 0x63880000;
+use constant NF_NULL_TYPE_PPPoES  => 0x64880000;
+use constant NF_NULL_TYPE_8021X   => 0x8e880000;
+use constant NF_NULL_TYPE_AoE     => 0xa2880000;
+use constant NF_NULL_TYPE_LLDP    => 0xcc880000;
+use constant NF_NULL_TYPE_LOOP    => 0x00900000;
+use constant NF_NULL_TYPE_VLAN    => 0x00910000;
+use constant NF_NULL_TYPE_ETH     => 0x58650000;
 
 our @AS = qw(
    type
@@ -36,12 +70,12 @@ no strict 'vars';
 
 sub new {
    shift->SUPER::new(
-      type => NP_NULL_TYPE_IPv4,
+      type => NF_NULL_TYPE_IPv4,
       @_,
    );
 }
 
-sub getLength { NP_NULL_HDR_LEN }
+sub getLength { NF_NULL_HDR_LEN }
 
 sub pack {
    my $self = shift;
@@ -63,19 +97,41 @@ sub unpack {
 }
 
 sub encapsulate {
+   my $self = shift;
+
+   return $self->[$__nextLayer] if $self->[$__nextLayer];
+
    my $types = {
-      NP_NULL_TYPE_IPv4() => 'IPv4',
-      NP_NULL_TYPE_IPv6() => 'IPv6',
+      NF_NULL_TYPE_IPv4()   => 'IPv4',
+      NF_NULL_TYPE_ARP()    => 'ARP',
+      NF_NULL_TYPE_CGMP()   => 'CGMP',
+      NF_NULL_TYPE_80211()  => '80211',
+      NF_NULL_TYPE_DDP()    => 'DDP',
+      NF_NULL_TYPE_AARP()   => 'AARP',
+      NF_NULL_TYPE_WCP()    => 'WCP',
+      NF_NULL_TYPE_8021Q()  => '8021Q',
+      NF_NULL_TYPE_IPX()    => 'IPX',
+      NF_NULL_TYPE_STP()    => 'STP',
+      NF_NULL_TYPE_IPv6()   => 'IPv6',
+      NF_NULL_TYPE_WLCCP()  => 'WLCCP',
+      NF_NULL_TYPE_PPPoED() => 'PPPoED',
+      NF_NULL_TYPE_PPPoES() => 'PPPoES',
+      NF_NULL_TYPE_8021X()  => '8021X',
+      NF_NULL_TYPE_AoE()    => 'AoE',
+      NF_NULL_TYPE_LLDP()   => 'LLDP',
+      NF_NULL_TYPE_LOOP()   => 'LOOP',
+      NF_NULL_TYPE_VLAN()   => 'VLAN',
+      NF_NULL_TYPE_ETH()    => 'ETH',
    };
 
-   $types->{shift->[$__type]} || $self->[$__nextLayer];
+   $types->{$self->[$__type]} || NF_LAYER_UNKNOWN;
 }
 
 sub print {
    my $self = shift;
 
    my $l = $self->layer;
-   sprintf "$l: type:0x%04x", $self->type;
+   sprintf "$l: type:0x%08x", $self->type;
 }
 
 1;
@@ -88,20 +144,18 @@ Net::Frame::NULL - BSD loopback layer object
 
 =head1 SYNOPSIS
 
-   #
-   # Usually, you do not use this module directly
-   #
-   use Net::Packet::Consts qw(:null);
-   require Net::Packet::NULL;
+   use Net::Frame::NULL qw(:consts);
 
    # Build a layer
-   my $layer = Net::Packet::NULL->new;
+   my $layer = Net::Frame::NULL->new(
+      type => NF_NULL_TYPE_IPv4,
+   );
    $layer->pack;
 
-   print 'RAW: '.unpack('H*', $layer->raw)."\n";
+   print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Packet::NULL->new(raw => $raw);
+   my $layer = Net::Frame::NULL->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -111,7 +165,7 @@ Net::Frame::NULL - BSD loopback layer object
 
 This modules implements the encoding and decoding of the BSD loopback layer.
 
-See also B<Net::Packet::Layer> and B<Net::Packet::Layer2> for other attributes and methods.
+See also B<Net::Frame::Layer> for other attributes and methods.
 
 =head1 ATTRIBUTES
 
@@ -123,49 +177,109 @@ Stores the type of encapsulated layer.
 
 =back
 
+The following are inherited attributes. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<raw>
+
+=item B<payload>
+
+=item B<nextLayer>
+
+=back
+
 =head1 METHODS
 
 =over 4
 
 =item B<new>
 
-Object constructor. You can pass attributes that will overwrite default ones. Default values:
+=item B<new> (hash)
 
-type: NP_NULL_TYPE_IPv4
+Object constructor. You can pass attributes that will overwrite default ones. See B<SYNOPSIS> for default values.
+
+=back
+
+The following are inherited methods. Some of them may be overriden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<layer>
+
+=item B<computeLengths>
+
+=item B<computeChecksums>
 
 =item B<pack>
 
-Packs all attributes into a raw format, in order to inject to network. Returns 1 on success, undef otherwise.
-
 =item B<unpack>
-
-Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
 
 =item B<encapsulate>
 
 =item B<getLength>
 
+=item B<getPayloadLength>
+
 =item B<print>
+
+=item B<dump>
 
 =back
 
 =head1 CONSTANTS
 
-Load them: use Net::Packet::Consts qw(:null);
+Load them: use Net::Frame::NULL qw(:consts);
 
 =over 4
 
-=item B<NP_NULL_HDR_LEN>
+=item B<NF_NULL_TYPE_IPv4>
 
-NULL header length in bytes.
+=item B<NF_NULL_TYPE_ARP>
 
-=item B<NP_NULL_TYPE_IPv4>
+=item B<NF_NULL_TYPE_CGMP>
 
-=item B<NP_NULL_TYPE_IPv6>
+=item B<NF_NULL_TYPE_80211>
+
+=item B<NF_NULL_TYPE_DDP>
+
+=item B<NF_NULL_TYPE_AARP>
+
+=item B<NF_NULL_TYPE_WCP>
+
+=item B<NF_NULL_TYPE_8021Q>
+
+=item B<NF_NULL_TYPE_IPX>
+
+=item B<NF_NULL_TYPE_STP>
+
+=item B<NF_NULL_TYPE_IPv6>
+
+=item B<NF_NULL_TYPE_WLCCP>
+
+=item B<NF_NULL_TYPE_PPPoED>
+
+=item B<NF_NULL_TYPE_PPPoES>
+
+=item B<NF_NULL_TYPE_8021X>
+
+=item B<NF_NULL_TYPE_AoE>
+
+=item B<NF_NULL_TYPE_LLDP>
+
+=item B<NF_NULL_TYPE_LOOP>
+
+=item B<NF_NULL_TYPE_VLAN>
+
+=item B<NF_NULL_TYPE_ETH>
 
 Various supported encapsulated layer types.
 
 =back
+
+=head1 SEE ALSO
+
+L<Net::Frame::Layer>
 
 =head1 AUTHOR
 

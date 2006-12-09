@@ -1,4 +1,4 @@
-eval "use Test::Pod::Coverage tests => 11";
+eval "use Test::Pod::Coverage tests => 10";
 if ($@) {
    use Test;
    plan(tests => 1);
@@ -15,5 +15,4 @@ else {
    pod_coverage_ok("Net::Frame::RAW");
    pod_coverage_ok("Net::Frame::SLL");
    pod_coverage_ok("Net::Frame::Layer");
-   pod_coverage_ok("Net::Frame::Utils");
 }

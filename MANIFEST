@@ -19,7 +19,6 @@ lib/Net/Frame/RAW.pm
 lib/Net/Frame/SLL.pm
 lib/Net/Frame/TCP.pm
 lib/Net/Frame/UDP.pm
-lib/Net/Frame/Utils.pm
 LICENSE
 LICENSE.Artistic
 Makefile.PL

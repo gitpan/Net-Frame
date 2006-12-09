@@ -1,84 +1,82 @@
 #
-# $Id: IPv4.pm,v 1.7 2006/12/06 21:19:00 gomor Exp $
+# $Id: IPv4.pm,v 1.10 2006/12/09 17:31:55 gomor Exp $
 #
 package Net::Frame::IPv4;
 use strict;
 use warnings;
 
-use Net::Frame::Layer qw(:consts);
+use Net::Frame::Layer qw(:consts :subs);
 require Exporter;
 our @ISA = qw(Net::Frame::Layer Exporter);
 
 our %EXPORT_TAGS = (
    consts => [qw(
-      NP_IPv4_HDR_LEN
-      NP_IPv4_PROTOCOL_USER
-      NP_IPv4_PROTOCOL_ICMPv4
-      NP_IPv4_PROTOCOL_IGMPv4
-      NP_IPv4_PROTOCOL_IPIP
-      NP_IPv4_PROTOCOL_TCP
-      NP_IPv4_PROTOCOL_EGP
-      NP_IPv4_PROTOCOL_IGRP
-      NP_IPv4_PROTOCOL_CHAOS
-      NP_IPv4_PROTOCOL_UDP
-      NP_IPv4_PROTOCOL_IDP
-      NP_IPv4_PROTOCOL_DCCP
-      NP_IPv4_PROTOCOL_IPv6
-      NP_IPv4_PROTOCOL_IPv6ROUTING
-      NP_IPv4_PROTOCOL_IPv6FRAGMENT
-      NP_IPv4_PROTOCOL_IDRP
-      NP_IPv4_PROTOCOL_RSVP
-      NP_IPv4_PROTOCOL_GRE
-      NP_IPv4_PROTOCOL_ESP
-      NP_IPv4_PROTOCOL_AH
-      NP_IPv4_PROTOCOL_ICMPv6
-      NP_IPv4_PROTOCOL_EIGRP
-      NP_IPv4_PROTOCOL_OSPF
-      NP_IPv4_PROTOCOL_ETHERIP
-      NP_IPv4_PROTOCOL_PIM
-      NP_IPv4_PROTOCOL_VRRP
-      NP_IPv4_PROTOCOL_STP
-      NP_IPv4_PROTOCOL_SCTP
-      NP_IPv4_MORE_FRAGMENT
-      NP_IPv4_DONT_FRAGMENT
-      NP_IPv4_RESERVED_FRAGMENT
+      NF_IPv4_HDR_LEN
+      NF_IPv4_PROTOCOL_ICMPv4
+      NF_IPv4_PROTOCOL_IGMPv4
+      NF_IPv4_PROTOCOL_IPIP
+      NF_IPv4_PROTOCOL_TCP
+      NF_IPv4_PROTOCOL_EGP
+      NF_IPv4_PROTOCOL_IGRP
+      NF_IPv4_PROTOCOL_CHAOS
+      NF_IPv4_PROTOCOL_UDP
+      NF_IPv4_PROTOCOL_IDP
+      NF_IPv4_PROTOCOL_DCCP
+      NF_IPv4_PROTOCOL_IPv6
+      NF_IPv4_PROTOCOL_IPv6ROUTING
+      NF_IPv4_PROTOCOL_IPv6FRAGMENT
+      NF_IPv4_PROTOCOL_IDRP
+      NF_IPv4_PROTOCOL_RSVP
+      NF_IPv4_PROTOCOL_GRE
+      NF_IPv4_PROTOCOL_ESP
+      NF_IPv4_PROTOCOL_AH
+      NF_IPv4_PROTOCOL_ICMPv6
+      NF_IPv4_PROTOCOL_EIGRP
+      NF_IPv4_PROTOCOL_OSPF
+      NF_IPv4_PROTOCOL_ETHERIP
+      NF_IPv4_PROTOCOL_PIM
+      NF_IPv4_PROTOCOL_VRRP
+      NF_IPv4_PROTOCOL_STP
+      NF_IPv4_PROTOCOL_SCTP
+      NF_IPv4_MORE_FRAGMENT
+      NF_IPv4_DONT_FRAGMENT
+      NF_IPv4_RESERVED_FRAGMENT
    )],
 );
 our @EXPORT_OK = (
    @{$EXPORT_TAGS{consts}},
 );
 
-use constant NP_IPv4_HDR_LEN           => 20;
-use constant NP_IPv4_PROTOCOL_USER         => 0x00;
-use constant NP_IPv4_PROTOCOL_ICMPv4       => 0x01;
-use constant NP_IPv4_PROTOCOL_IGMPv4       => 0x02;
-use constant NP_IPv4_PROTOCOL_IPIP         => 0x04;
-use constant NP_IPv4_PROTOCOL_TCP          => 0x06;
-use constant NP_IPv4_PROTOCOL_EGP          => 0x08;
-use constant NP_IPv4_PROTOCOL_IGRP         => 0x09;
-use constant NP_IPv4_PROTOCOL_CHAOS        => 0x10;
-use constant NP_IPv4_PROTOCOL_UDP          => 0x11;
-use constant NP_IPv4_PROTOCOL_IDP          => 0x16;
-use constant NP_IPv4_PROTOCOL_DCCP         => 0x21;
-use constant NP_IPv4_PROTOCOL_IPv6         => 0x29;
-use constant NP_IPv4_PROTOCOL_IPv6ROUTING  => 0x2b;
-use constant NP_IPv4_PROTOCOL_IPv6FRAGMENT => 0x2c;
-use constant NP_IPv4_PROTOCOL_IDRP         => 0x2d;
-use constant NP_IPv4_PROTOCOL_RSVP         => 0x2e;
-use constant NP_IPv4_PROTOCOL_GRE          => 0x2f;
-use constant NP_IPv4_PROTOCOL_ESP          => 0x32;
-use constant NP_IPv4_PROTOCOL_AH           => 0x33;
-use constant NP_IPv4_PROTOCOL_ICMPv6       => 0x3a;
-use constant NP_IPv4_PROTOCOL_EIGRP        => 0x58;
-use constant NP_IPv4_PROTOCOL_OSPF         => 0x59;
-use constant NP_IPv4_PROTOCOL_ETHERIP      => 0x61;
-use constant NP_IPv4_PROTOCOL_PIM          => 0x67;
-use constant NP_IPv4_PROTOCOL_VRRP         => 0x70;
-use constant NP_IPv4_PROTOCOL_STP          => 0x76;
-use constant NP_IPv4_PROTOCOL_SCTP         => 0x84;
-use constant NP_IPv4_MORE_FRAGMENT     => 1;
-use constant NP_IPv4_DONT_FRAGMENT     => 2;
-use constant NP_IPv4_RESERVED_FRAGMENT => 4;
+use constant NF_IPv4_HDR_LEN           => 20;
+use constant NF_IPv4_PROTOCOL_ICMPv4       => 0x01;
+use constant NF_IPv4_PROTOCOL_IGMPv4       => 0x02;
+use constant NF_IPv4_PROTOCOL_IPIP         => 0x04;
+use constant NF_IPv4_PROTOCOL_TCP          => 0x06;
+use constant NF_IPv4_PROTOCOL_EGP          => 0x08;
+use constant NF_IPv4_PROTOCOL_IGRP         => 0x09;
+use constant NF_IPv4_PROTOCOL_CHAOS        => 0x10;
+use constant NF_IPv4_PROTOCOL_UDP          => 0x11;
+use constant NF_IPv4_PROTOCOL_IDP          => 0x16;
+use constant NF_IPv4_PROTOCOL_DCCP         => 0x21;
+use constant NF_IPv4_PROTOCOL_IPv6         => 0x29;
+use constant NF_IPv4_PROTOCOL_IPv6ROUTING  => 0x2b;
+use constant NF_IPv4_PROTOCOL_IPv6FRAGMENT => 0x2c;
+use constant NF_IPv4_PROTOCOL_IDRP         => 0x2d;
+use constant NF_IPv4_PROTOCOL_RSVP         => 0x2e;
+use constant NF_IPv4_PROTOCOL_GRE          => 0x2f;
+use constant NF_IPv4_PROTOCOL_ESP          => 0x32;
+use constant NF_IPv4_PROTOCOL_AH           => 0x33;
+use constant NF_IPv4_PROTOCOL_ICMPv6       => 0x3a;
+use constant NF_IPv4_PROTOCOL_EIGRP        => 0x58;
+use constant NF_IPv4_PROTOCOL_OSPF         => 0x59;
+use constant NF_IPv4_PROTOCOL_ETHERIP      => 0x61;
+use constant NF_IPv4_PROTOCOL_PIM          => 0x67;
+use constant NF_IPv4_PROTOCOL_VRRP         => 0x70;
+use constant NF_IPv4_PROTOCOL_STP          => 0x76;
+use constant NF_IPv4_PROTOCOL_SCTP         => 0x84;
+use constant NF_IPv4_MORE_FRAGMENT     => 1;
+use constant NF_IPv4_DONT_FRAGMENT     => 2;
+use constant NF_IPv4_RESERVED_FRAGMENT => 4;
 
 our @AS = qw(
    id
@@ -111,7 +109,6 @@ BEGIN {
 no strict 'vars';
 
 use Carp;
-use Net::Frame::Utils qw(getRandom16bitsInt inetAton inetNtoa inetChecksum);
 use Bit::Vector;
 
 sub _fixLenBsd   { pack('v', shift) }
@@ -122,12 +119,12 @@ sub new {
       version  => 4,
       tos      => 0,
       id       => getRandom16bitsInt(),
-      length   => NP_IPv4_HDR_LEN,
+      length   => NF_IPv4_HDR_LEN,
       hlen     => 5,
       flags    => 0,
       offset   => 0,
       ttl      => 128,
-      protocol => NP_IPv4_PROTOCOL_TCP,
+      protocol => NF_IPv4_PROTOCOL_TCP,
       checksum => 0,
       src      => '127.0.0.1',
       dst      => '127.0.0.1',
@@ -226,7 +223,7 @@ sub getPayloadLength {
 sub getOptionsLength {
    my $self = shift;
    my $gLen = $self->getLength;
-   my $hLen = NP_IPv4_HDR_LEN;
+   my $hLen = NF_IPv4_HDR_LEN;
    $gLen > $hLen ? $gLen - $hLen : 0;
 }
 
@@ -234,7 +231,7 @@ sub computeLengths {
    my $self = shift;
    my ($h)  = @_;
 
-   my $hLen = NP_IPv4_HDR_LEN;
+   my $hLen = NF_IPv4_HDR_LEN;
    $hLen   += length($self->[$__options]) if $self->[$__options];
    $self->[$__hlen] = $hLen / 4;
 
@@ -252,53 +249,46 @@ sub computeChecksums {
       $self->[$__checksum] = 0;
    }
 
-   $self->pack;
-   $self->[$__checksum] = inetChecksum($self->[$__raw]);
+   $self->[$__checksum] = inetChecksum($self->pack);
 
    1;
 }
 
 sub encapsulate {
+   my $self = shift;
+
+   return $self->[$__nextLayer] if $self->[$__nextLayer];
+
    my $types = {
-      NP_IPv4_PROTOCOL_ICMPv4()       => 'ICMPv4',
-      NP_IPv4_PROTOCOL_IGMPv4()       => 'IGMPv4',
-      NP_IPv4_PROTOCOL_IPIP()         => 'IPIP',
-      NP_IPv4_PROTOCOL_TCP()          => 'TCP',
-      NP_IPv4_PROTOCOL_EGP()          => 'EGP',
-      NP_IPv4_PROTOCOL_IGRP()         => 'IGRP',
-      NP_IPv4_PROTOCOL_CHAOS()        => 'CHAOS',
-      NP_IPv4_PROTOCOL_UDP()          => 'UDP',
-      NP_IPv4_PROTOCOL_IDP()          => 'IDP',
-      NP_IPv4_PROTOCOL_DCCP()         => 'DCCP',
-      NP_IPv4_PROTOCOL_IPv6()         => 'IPv6',
-      NP_IPv4_PROTOCOL_IPv6ROUTING()  => 'IPv6Routing',
-      NP_IPv4_PROTOCOL_IPv6FRAGMENT() => 'IPv6Fragment',
-      NP_IPv4_PROTOCOL_IDRP()         => 'IDRP',
-      NP_IPv4_PROTOCOL_RSVP()         => 'RSVP',
-      NP_IPv4_PROTOCOL_GRE()          => 'GRE',
-      NP_IPv4_PROTOCOL_ESP()          => 'ESP',
-      NP_IPv4_PROTOCOL_AH()           => 'AH',
-      NP_IPv4_PROTOCOL_ICMPv6()       => 'ICMPv6',
-      NP_IPv4_PROTOCOL_EIGRP()        => 'EIGRP',
-      NP_IPv4_PROTOCOL_OSPF()         => 'OSPF',
-      NP_IPv4_PROTOCOL_ETHERIP()      => 'ETHERIP',
-      NP_IPv4_PROTOCOL_PIM()          => 'PIM',
-      NP_IPv4_PROTOCOL_VRRP()         => 'VRRP',
-      NP_IPv4_PROTOCOL_STP()          => 'STP',
-      NP_IPv4_PROTOCOL_SCTP()         => 'SCTP',
+      NF_IPv4_PROTOCOL_ICMPv4()       => 'ICMPv4',
+      NF_IPv4_PROTOCOL_IGMPv4()       => 'IGMPv4',
+      NF_IPv4_PROTOCOL_IPIP()         => 'IPIP',
+      NF_IPv4_PROTOCOL_TCP()          => 'TCP',
+      NF_IPv4_PROTOCOL_EGP()          => 'EGP',
+      NF_IPv4_PROTOCOL_IGRP()         => 'IGRP',
+      NF_IPv4_PROTOCOL_CHAOS()        => 'CHAOS',
+      NF_IPv4_PROTOCOL_UDP()          => 'UDP',
+      NF_IPv4_PROTOCOL_IDP()          => 'IDP',
+      NF_IPv4_PROTOCOL_DCCP()         => 'DCCP',
+      NF_IPv4_PROTOCOL_IPv6()         => 'IPv6',
+      NF_IPv4_PROTOCOL_IPv6ROUTING()  => 'IPv6Routing',
+      NF_IPv4_PROTOCOL_IPv6FRAGMENT() => 'IPv6Fragment',
+      NF_IPv4_PROTOCOL_IDRP()         => 'IDRP',
+      NF_IPv4_PROTOCOL_RSVP()         => 'RSVP',
+      NF_IPv4_PROTOCOL_GRE()          => 'GRE',
+      NF_IPv4_PROTOCOL_ESP()          => 'ESP',
+      NF_IPv4_PROTOCOL_AH()           => 'AH',
+      NF_IPv4_PROTOCOL_ICMPv6()       => 'ICMPv6',
+      NF_IPv4_PROTOCOL_EIGRP()        => 'EIGRP',
+      NF_IPv4_PROTOCOL_OSPF()         => 'OSPF',
+      NF_IPv4_PROTOCOL_ETHERIP()      => 'ETHERIP',
+      NF_IPv4_PROTOCOL_PIM()          => 'PIM',
+      NF_IPv4_PROTOCOL_VRRP()         => 'VRRP',
+      NF_IPv4_PROTOCOL_STP()          => 'STP',
+      NF_IPv4_PROTOCOL_SCTP()         => 'SCTP',
    };
 
-   $types->{shift->[$__protocol]} || $self->[$__nextLayer];
-}
-
-sub getKey {
-   my $self  = shift;
-   $self->layer.':'.$self->[$__src].'-'.$self->[$__dst];
-}
-
-sub getKeyReverse {
-   my $self  = shift;
-   $self->layer.':'.$self->[$__dst].'-'.$self->[$__src];
+   $types->{$self->[$__protocol]} || NF_LAYER_UNKNOWN;
 }
 
 sub print {
@@ -315,7 +305,7 @@ sub print {
          $self->[$__checksum], $self->[$__src], $self->[$__dst];
 
    if ($self->[$__options]) {
-      $buf .= sprintf "\n$l: $i: optionsLength:%d  options:%s",
+      $buf .= sprintf "\n$l: optionsLength:%d  options:%s",
          $self->getOptionsLength,
          CORE::unpack('H*', $self->[$__options]);
    }
@@ -333,20 +323,31 @@ Net::Frame::IPv4 - Internet Protocol v4 layer object
 
 =head1 SYNOPSIS
 
-   use Net::Packet::Consts qw(:ipv4);
-   require Net::Packet::IPv4;
+   use Net::Frame::IPv4 qw(:consts);
 
    # Build a layer
-   my $ip = Net::Packet::IPv4->new(
-      flags => NP_IPv4_DONT_FRAGMENT,
-      dst   => "192.168.0.1",
+   my $layer = Net::Frame::IPv4->new(
+      version  => 4,
+      tos      => 0,
+      id       => getRandom16bitsInt(),
+      length   => NF_IPv4_HDR_LEN,
+      hlen     => 5,
+      flags    => 0,
+      offset   => 0,
+      ttl      => 128,
+      protocol => NF_IPv4_PROTOCOL_TCP,
+      checksum => 0,
+      src      => '127.0.0.1',
+      dst      => '127.0.0.1',
+      options  => '',
+      noFixLen => 0,
    );
    $layer->pack;
 
-   print 'RAW: '.unpack('H*', $layer->raw)."\n";
+   print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Packet::IPv4->new(raw => $raw);
+   my $layer = Net::Frame::IPv4->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -358,7 +359,7 @@ This modules implements the encoding and decoding of the IPv4 layer.
 
 RFC: ftp://ftp.rfc-editor.org/in-notes/rfc791.txt
       
-See also B<Net::Packet::Layer> and B<Net::Packet::Layer3> for other attributes and methods.
+See also B<Net::Frame::Layer> for other attributes and methods.
 
 =head1 ATTRIBUTES
 
@@ -416,7 +417,19 @@ IP options, as a hexadecimal string.
 
 =item B<noFixLen>
 
-Since the byte ordering of B<length> attribute varies from system to system, a subroutine inside this module detects which byte order to use. Sometimes, like when you build B<Net::Packet::VLAN> layers, you may have the need to avoid this. So set it to 1 in order to avoid fixing. Default is 0 (that is to fix).
+Since the byte ordering of B<length> attribute varies from system to system, a subroutine inside this module detects which byte order to use. Sometimes, like when you build B<Net::Frame::8021Q> layers, you may have the need to avoid this. So set it to 1 in order to avoid fixing. Default is 0 (that is to fix).
+
+=back
+
+The following are inherited attributes. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<raw>
+
+=item B<payload>
+
+=item B<nextLayer>
 
 =back
 
@@ -426,102 +439,127 @@ Since the byte ordering of B<length> attribute varies from system to system, a s
 
 =item B<new>
 
-Object constructor. You can pass attributes that will overwrite default ones. Default values:
+=item B<new> (hash)
 
-version:  4
-
-tos:      0
-
-id:       getRandom16bitsInt()
-
-length:   NP_IPv4_HDR_LEN
-
-hlen:     5
-
-flags:    0
-
-offset:   0
-
-ttl:      128
-
-protocol: NP_IPv4_PROTOCOL_TCP
-
-checksum: 0
-
-src:      $Env->ip
-
-dst:      "127.0.0.1"
-
-options:  ""
-
-noFixLen:   0
-
-=item B<pack>
-
-Packs all attributes into a raw format, in order to inject to network. Returns 1
- on success, undef otherwise.
-
-=item B<unpack>
-
-Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
+Object constructor. You can pass attributes that will overwrite default ones. See B<SYNOPSIS> for default values.
 
 =item B<getHeaderLength>
 
 Returns the header length in bytes, not including IP options.
 
-=item B<getPayloadLength>
-
-Returns the length in bytes of encapsulated layers (that is, layer 4 + layer 7).
-
 =item B<getOptionsLength>
 
-Returns the length in bytes of IP options.
+Returns the length in bytes of IP options. 0 if none.
+
+=item B<computeLengths> ({ payloadLength => VALUE })
+
+In order to compute lengths attributes within IPv4 header, you need to pass via a hashref the number of bytes contained in IPv4 payload (that is, the sum of all layers after the IPv4 one).
 
 =item B<computeChecksums>
 
+Computes the IPv4 checksum.
+
+=back
+
+The following are inherited methods. Some of them may be overriden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<layer>
+
 =item B<computeLengths>
+
+=item B<computeChecksums>
+
+=item B<pack>
+
+=item B<unpack>
 
 =item B<encapsulate>
 
-=item B<getKey>
-
-=item B<getKeyReverse>
-
 =item B<getLength>
 
+=item B<getPayloadLength>
+
 =item B<print>
+
+=item B<dump>
 
 =back
 
 =head1 CONSTANTS
 
-Load them: use Net::Packet::Consts qw(:ipv4);
+Load them: use Net::Frame::IPv4 qw(:consts);
 
 =over 4
 
-=item B<NP_IPv4_PROTOCOL_TCP>
+=item B<NF_IPv4_PROTOCOL_ICMPv4>
 
-=item B<NP_IPv4_PROTOCOL_UDP>
+=item B<NF_IPv4_PROTOCOL_IGMPv4>
 
-=item B<NP_IPv4_PROTOCOL_ICMPv4>
+=item B<NF_IPv4_PROTOCOL_IPIP>
 
-=item B<NP_IPv4_PROTOCOL_IPv6>
+=item B<NF_IPv4_PROTOCOL_TCP>
 
-=item B<NP_IPv4_PROTOCOL_OSPF>
+=item B<NF_IPv4_PROTOCOL_EGP>
 
-=item B<NP_IPv4_PROTOCOL_IGMPv4>
+=item B<NF_IPv4_PROTOCOL_IGRP>
+
+=item B<NF_IPv4_PROTOCOL_CHAOS>
+
+=item B<NF_IPv4_PROTOCOL_UDP>
+
+=item B<NF_IPv4_PROTOCOL_IDP>
+
+=item B<NF_IPv4_PROTOCOL_DCCP>
+
+=item B<NF_IPv4_PROTOCOL_IPv6>
+
+=item B<NF_IPv4_PROTOCOL_IPv6ROUTING>
+
+=item B<NF_IPv4_PROTOCOL_IPv6FRAGMENT>
+
+=item B<NF_IPv4_PROTOCOL_IDRP>
+
+=item B<NF_IPv4_PROTOCOL_RSVP>
+
+=item B<NF_IPv4_PROTOCOL_GRE>
+
+=item B<NF_IPv4_PROTOCOL_ESP>
+
+=item B<NF_IPv4_PROTOCOL_AH>
+
+=item B<NF_IPv4_PROTOCOL_ICMPv6>
+
+=item B<NF_IPv4_PROTOCOL_EIGRP>
+
+=item B<NF_IPv4_PROTOCOL_OSPF>
+
+=item B<NF_IPv4_PROTOCOL_ETHERIP>
+
+=item B<NF_IPv4_PROTOCOL_PIM>
+
+=item B<NF_IPv4_PROTOCOL_VRRP>
+
+=item B<NF_IPv4_PROTOCOL_STP>
+
+=item B<NF_IPv4_PROTOCOL_SCTP>
 
 Various protocol type constants.
 
-=item B<NP_IPv4_MORE_FRAGMENT>
+=item B<NF_IPv4_MORE_FRAGMENT>
 
-=item B<NP_IPv4_DONT_FRAGMENT>
+=item B<NF_IPv4_DONT_FRAGMENT>
 
-=item B<NP_IPv4_RESERVED_FRAGMENT>
+=item B<NF_IPv4_RESERVED_FRAGMENT>
 
 Various possible flags.
 
 =back
+
+=head1 SEE ALSO
+
+L<Net::Frame::Layer>
 
 =head1 AUTHOR
    

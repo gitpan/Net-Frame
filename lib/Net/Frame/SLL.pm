@@ -1,5 +1,5 @@
 #
-# $Id: SLL.pm,v 1.7 2006/12/06 21:20:02 gomor Exp $
+# $Id: SLL.pm,v 1.11 2006/12/09 17:32:48 gomor Exp $
 #
 package Net::Frame::SLL;
 use strict;
@@ -11,74 +11,72 @@ our @ISA = qw(Net::Frame::Layer Exporter);
 
 our %EXPORT_TAGS = (
    consts => [qw(
-      NP_SLL_HDR_LEN
-      NP_SLL_PACKET_TYPE_SENT_BY_US
-      NP_SLL_PACKET_TYPE_UNICAST_TO_US
-      NP_SLL_ADDRESS_TYPE_512
-      NP_SLL_PROTOCOL_USER
-      NP_SLL_PROTOCOL_IPv4
-      NP_SLL_PROTOCOL_X25
-      NP_SLL_PROTOCOL_ARP
-      NP_SLL_PROTOCOL_CGMP
-      NP_SLL_PROTOCOL_80211
-      NP_SLL_PROTOCOL_PPPIPCP
-      NP_SLL_PROTOCOL_RARP
-      NP_SLL_PROTOCOL_DDP
-      NP_SLL_PROTOCOL_AARP
-      NP_SLL_PROTOCOL_PPPCCP
-      NP_SLL_PROTOCOL_WCP
-      NP_SLL_PROTOCOL_8021Q
-      NP_SLL_PROTOCOL_IPX
-      NP_SLL_PROTOCOL_STP
-      NP_SLL_PROTOCOL_IPv6
-      NP_SLL_PROTOCOL_WLCCP
-      NP_SLL_PROTOCOL_PPPoED
-      NP_SLL_PROTOCOL_PPPoES
-      NP_SLL_PROTOCOL_8021x
-      NP_SLL_PROTOCOL_AoE
-      NP_SLL_PROTOCOL_80211i
-      NP_SLL_PROTOCOL_LLDP
-      NP_SLL_PROTOCOL_LOOP
-      NP_SLL_PROTOCOL_VLAN
-      NP_SLL_PROTOCOL_PPPPAP
-      NP_SLL_PROTOCOL_PPPCHAP
+      NF_SLL_HDR_LEN
+      NF_SLL_PACKET_TYPE_SENT_BY_US
+      NF_SLL_PACKET_TYPE_UNICAST_TO_US
+      NF_SLL_ADDRESS_TYPE_512
+      NF_SLL_PROTOCOL_IPv4
+      NF_SLL_PROTOCOL_X25
+      NF_SLL_PROTOCOL_ARP
+      NF_SLL_PROTOCOL_CGMP
+      NF_SLL_PROTOCOL_80211
+      NF_SLL_PROTOCOL_PPPIPCP
+      NF_SLL_PROTOCOL_RARP
+      NF_SLL_PROTOCOL_DDP
+      NF_SLL_PROTOCOL_AARP
+      NF_SLL_PROTOCOL_PPPCCP
+      NF_SLL_PROTOCOL_WCP
+      NF_SLL_PROTOCOL_8021Q
+      NF_SLL_PROTOCOL_IPX
+      NF_SLL_PROTOCOL_STP
+      NF_SLL_PROTOCOL_IPv6
+      NF_SLL_PROTOCOL_WLCCP
+      NF_SLL_PROTOCOL_PPPoED
+      NF_SLL_PROTOCOL_PPPoES
+      NF_SLL_PROTOCOL_8021X
+      NF_SLL_PROTOCOL_AoE
+      NF_SLL_PROTOCOL_80211I
+      NF_SLL_PROTOCOL_LLDP
+      NF_SLL_PROTOCOL_LOOP
+      NF_SLL_PROTOCOL_VLAN
+      NF_SLL_PROTOCOL_PPPPAP
+      NF_SLL_PROTOCOL_PPPCHAP
    )],
 );
 our @EXPORT_OK = (
    @{$EXPORT_TAGS{consts}},
 );
 
-use constant NP_SLL_HDR_LEN                   => 16;
-use constant NP_SLL_PACKET_TYPE_SENT_BY_US    => 4;
-use constant NP_SLL_PACKET_TYPE_UNICAST_TO_US => 0;
-use constant NP_SLL_ADDRESS_TYPE_512          => 512;
-use constant NP_SLL_PROTOCOL_USER      => 0x0000;
-use constant NP_SLL_PROTOCOL_IPv4      => 0x0800;
-use constant NP_SLL_PROTOCOL_X25       => 0x0805;
-use constant NP_SLL_PROTOCOL_ARP       => 0x0806;
-use constant NP_SLL_PROTOCOL_CGMP      => 0x2001;
-use constant NP_SLL_PROTOCOL_80211     => 0x2452;
-use constant NP_SLL_PROTOCOL_PPPIPCP   => 0x8021;
-use constant NP_SLL_PROTOCOL_RARP      => 0x8035;
-use constant NP_SLL_PROTOCOL_DDP       => 0x809b;
-use constant NP_SLL_PROTOCOL_AARP      => 0x80f3;
-use constant NP_SLL_PROTOCOL_PPPCCP    => 0x80fd;
-use constant NP_SLL_PROTOCOL_WCP       => 0x80ff;
-use constant NP_SLL_PROTOCOL_8021Q     => 0x8100;
-use constant NP_SLL_PROTOCOL_IPX       => 0x8137;
-use constant NP_SLL_PROTOCOL_STP       => 0x8181;
-use constant NP_SLL_PROTOCOL_IPv6      => 0x86dd;
-use constant NP_SLL_PROTOCOL_WLCCP     => 0x872d;
-use constant NP_SLL_PROTOCOL_PPPoED    => 0x8863;
-use constant NP_SLL_PROTOCOL_PPPoES    => 0x8864;
-use constant NP_SLL_PROTOCOL_8021x     => 0x888e;
-use constant NP_SLL_PROTOCOL_AoE       => 0x88a2;
-use constant NP_SLL_PROTOCOL_80211i    => 0x88c7;
-use constant NP_SLL_PROTOCOL_LLDP      => 0x88cc;
-use constant NP_SLL_PROTOCOL_LOOP      => 0x9000;
-use constant NP_SLL_PROTOCOL_VLAN      => 0x9100;
-use constant NP_SLL_PROTOCOL_PPPPAP    => 0xc023;
-use constant NP_SLL_PROTOCOL_PPPCHAP   => 0xc223;
+use constant NF_SLL_HDR_LEN                   => 16;
+use constant NF_SLL_PACKET_TYPE_SENT_BY_US    => 4;
+use constant NF_SLL_PACKET_TYPE_UNICAST_TO_US => 0;
+use constant NF_SLL_ADDRESS_TYPE_512          => 512;
+use constant NF_SLL_PROTOCOL_IPv4      => 0x0800;
+use constant NF_SLL_PROTOCOL_X25       => 0x0805;
+use constant NF_SLL_PROTOCOL_ARP       => 0x0806;
+use constant NF_SLL_PROTOCOL_CGMP      => 0x2001;
+use constant NF_SLL_PROTOCOL_80211     => 0x2452;
+use constant NF_SLL_PROTOCOL_PPPIPCP   => 0x8021;
+use constant NF_SLL_PROTOCOL_RARP      => 0x8035;
+use constant NF_SLL_PROTOCOL_DDP       => 0x809b;
+use constant NF_SLL_PROTOCOL_AARP      => 0x80f3;
+use constant NF_SLL_PROTOCOL_PPPCCP    => 0x80fd;
+use constant NF_SLL_PROTOCOL_WCP       => 0x80ff;
+use constant NF_SLL_PROTOCOL_8021Q     => 0x8100;
+use constant NF_SLL_PROTOCOL_IPX       => 0x8137;
+use constant NF_SLL_PROTOCOL_STP       => 0x8181;
+use constant NF_SLL_PROTOCOL_IPv6      => 0x86dd;
+use constant NF_SLL_PROTOCOL_WLCCP     => 0x872d;
+use constant NF_SLL_PROTOCOL_PPPoED    => 0x8863;
+use constant NF_SLL_PROTOCOL_PPPoES    => 0x8864;
+use constant NF_SLL_PROTOCOL_8021X     => 0x888e;
+use constant NF_SLL_PROTOCOL_AoE       => 0x88a2;
+use constant NF_SLL_PROTOCOL_80211I    => 0x88c7;
+use constant NF_SLL_PROTOCOL_LLDP      => 0x88cc;
+use constant NF_SLL_PROTOCOL_LOOP      => 0x9000;
+use constant NF_SLL_PROTOCOL_VLAN      => 0x9100;
+use constant NF_SLL_PROTOCOL_PPPPAP    => 0xc023;
+use constant NF_SLL_PROTOCOL_PPPCHAP   => 0xc223;
 
 our @AS = qw(
    packetType
@@ -94,16 +92,16 @@ no strict 'vars';
 
 sub new {
    shift->SUPER::new(
-      packetType    => NP_SLL_PACKET_TYPE_SENT_BY_US,
-      addressType   => NP_SLL_ADDRESS_TYPE_512,
+      packetType    => NF_SLL_PACKET_TYPE_SENT_BY_US,
+      addressType   => NF_SLL_ADDRESS_TYPE_512,
       addressLength => 0,
       source        => 0,
-      protocol      => NP_SLL_PROTOCOL_IPv4,
+      protocol      => NF_SLL_PROTOCOL_IPv4,
       @_,
    );
 }
 
-sub getLength { NP_SLL_HDR_LEN }
+sub getLength { NF_SLL_HDR_LEN }
 
 sub pack {
    my $self = shift;
@@ -137,36 +135,40 @@ sub unpack {
 }
 
 sub encapsulate {
+   my $self = shift;
+
+   return $self->[$__nextLayer] if $self->[$__nextLayer];
+
    my $types = {
-      NP_SLL_PROTOCOL_IPv4()    => 'IPv4',
-      NP_SLL_PROTOCOL_X25()     => 'X25',
-      NP_SLL_PROTOCOL_ARP()     => 'ARP',
-      NP_SLL_PROTOCOL_CGMP()    => 'CGMP',
-      NP_SLL_PROTOCOL_80211()   => '80211',
-      NP_SLL_PROTOCOL_PPPIPCP() => 'PPPIPCP',
-      NP_SLL_PROTOCOL_RARP()    => 'RARP',
-      NP_SLL_PROTOCOL_DDP ()    => 'DDP',
-      NP_SLL_PROTOCOL_AARP()    => 'AARP',
-      NP_SLL_PROTOCOL_PPPCCP()  => 'PPPCCP',
-      NP_SLL_PROTOCOL_WCP()     => 'WCP',
-      NP_SLL_PROTOCOL_8021Q()   => '8021Q',
-      NP_SLL_PROTOCOL_IPX()     => 'IPX',
-      NP_SLL_PROTOCOL_STP()     => 'STP',
-      NP_SLL_PROTOCOL_IPv6()    => 'IPv6',
-      NP_SLL_PROTOCOL_WLCCP()   => 'WLCCP',
-      NP_SLL_PROTOCOL_PPPoED()  => 'PPPoED',
-      NP_SLL_PROTOCOL_PPPoES()  => 'PPPoES',
-      NP_SLL_PROTOCOL_8021x()   => '8021x',
-      NP_SLL_PROTOCOL_AoE()     => 'AoE',
-      NP_SLL_PROTOCOL_80211i()  => '80211i',
-      NP_SLL_PROTOCOL_LLDP()    => 'LLDP',
-      NP_SLL_PROTOCOL_LOOP()    => 'LOOP',
-      NP_SLL_PROTOCOL_VLAN()    => 'VLAN',
-      NP_SLL_PROTOCOL_PPPPAP()  => 'PPPPAP',
-      NP_SLL_PROTOCOL_PPPCHAP() => 'PPPCHAP',
+      NF_SLL_PROTOCOL_IPv4()    => 'IPv4',
+      NF_SLL_PROTOCOL_X25()     => 'X25',
+      NF_SLL_PROTOCOL_ARP()     => 'ARP',
+      NF_SLL_PROTOCOL_CGMP()    => 'CGMP',
+      NF_SLL_PROTOCOL_80211()   => '80211',
+      NF_SLL_PROTOCOL_PPPIPCP() => 'PPPIPCP',
+      NF_SLL_PROTOCOL_RARP()    => 'RARP',
+      NF_SLL_PROTOCOL_DDP ()    => 'DDP',
+      NF_SLL_PROTOCOL_AARP()    => 'AARP',
+      NF_SLL_PROTOCOL_PPPCCP()  => 'PPPCCP',
+      NF_SLL_PROTOCOL_WCP()     => 'WCP',
+      NF_SLL_PROTOCOL_8021Q()   => '8021Q',
+      NF_SLL_PROTOCOL_IPX()     => 'IPX',
+      NF_SLL_PROTOCOL_STP()     => 'STP',
+      NF_SLL_PROTOCOL_IPv6()    => 'IPv6',
+      NF_SLL_PROTOCOL_WLCCP()   => 'WLCCP',
+      NF_SLL_PROTOCOL_PPPoED()  => 'PPPoED',
+      NF_SLL_PROTOCOL_PPPoES()  => 'PPPoES',
+      NF_SLL_PROTOCOL_8021X()   => '8021X',
+      NF_SLL_PROTOCOL_AoE()     => 'AoE',
+      NF_SLL_PROTOCOL_80211I()  => '80211I',
+      NF_SLL_PROTOCOL_LLDP()    => 'LLDP',
+      NF_SLL_PROTOCOL_LOOP()    => 'LOOP',
+      NF_SLL_PROTOCOL_VLAN()    => 'VLAN',
+      NF_SLL_PROTOCOL_PPPPAP()  => 'PPPPAP',
+      NF_SLL_PROTOCOL_PPPCHAP() => 'PPPCHAP',
    };
 
-   $types->{shift->[$__protocol]} || $self->[$__nextLayer];
+   $types->{$self->[$__protocol]} || NF_LAYER_UNKNOWN;
 }
 
 sub print {
@@ -190,20 +192,22 @@ Net::Frame::SLL - Linux cooked capture layer object
 
 =head1 SYNOPSIS
 
-   #
-   # Usually, you do not use this module directly
-   #
-   use Net::Packet::Consts qw(:sll);
-   require Net::Packet::SLL;
+   use Net::Frame::SLL qw(:consts);
 
    # Build a layer
-   my $layer = Net::Packet::SLL->new;
+   my $layer = Net::Frame::SLL->new(
+      packetType    => NF_SLL_PACKET_TYPE_SENT_BY_US,
+      addressType   => NF_SLL_ADDRESS_TYPE_512,
+      addressLength => 0,
+      source        => 0,
+      protocol      => NF_SLL_PROTOCOL_IPv4,
+   );
    $layer->pack;
 
-   print 'RAW: '.unpack('H*', $layer->raw)."\n";
+   print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Packet::SLL->new(raw => $raw);
+   my $layer = Net::Frame::SLL->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -213,7 +217,7 @@ Net::Frame::SLL - Linux cooked capture layer object
 
 This modules implements the encoding and decoding of the Linux cooked capture layer.
 
-See also B<Net::Packet::Layer> and B<Net::Packet::Layer2> for other attributes and methods.
+See also B<Net::Frame::Layer> for other attributes and methods.
 
 =head1 ATTRIBUTES
 
@@ -241,67 +245,129 @@ Encapsulated protocol.
 
 =back
 
+The following are inherited attributes. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<raw>
+
+=item B<payload>
+
+=item B<nextLayer>
+
+=back
+
 =head1 METHODS
 
 =over 4
 
 =item B<new>
 
-Object constructor. You can pass attributes that will overwrite default ones. Default values:
+=item B<new> (hash)
 
-packetType:    NP_SLL_PACKET_TYPE_SENT_BY_US
+Object constructor. You can pass attributes that will overwrite default ones. See B<SYNOPSIS> for default values.
 
-addressType:   NP_SLL_ADDRESS_TYPE_512
+=back
 
-addressLength: 0
+The following are inherited methods. Some of them may be overriden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
 
-source:        0
+=over 4
 
-protocol:      NP_SLL_PROTOCOL_IPv4
+=item B<layer>
+
+=item B<computeLengths>
+
+=item B<computeChecksums>
 
 =item B<pack>
 
-Packs all attributes into a raw format, in order to inject to network. Returns 1 on success, undef otherwise.
-
 =item B<unpack>
-
-Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
 
 =item B<encapsulate>
 
 =item B<getLength>
 
+=item B<getPayloadLength>
+
 =item B<print>
+
+=item B<dump>
 
 =back
 
 =head1 CONSTANTS
 
-Load them: use Net::Packet::Consts qw(:sll);
+Load them: use Net::Frame::SLL qw(:consts);
 
 =over 4
 
-=item B<NP_SLL_PACKET_TYPE_SENT_BY_US>
+=item B<NF_SLL_PACKET_TYPE_SENT_BY_US>
 
-=item B<NP_SLL_PACKET_TYPE_UNICAST_TO_US>
+=item B<NF_SLL_PACKET_TYPE_UNICAST_TO_US>
 
 Various possible packet types.
 
-=item B<NP_SLL_PROTOCOL_IPv4>
+=item B<NF_SLL_PROTOCOL_IPv4>
 
-=item B<NP_SLL_PROTOCOL_IPv6>
+=item B<NF_SLL_PROTOCOL_X25>
 
-=item B<NP_SLL_PROTOCOL_ARP>
+=item B<NF_SLL_PROTOCOL_ARP>
 
-=item B<NP_SLL_PROTOCOL_VLAN>
+=item B<NF_SLL_PROTOCOL_CGMP>
+
+=item B<NF_SLL_PROTOCOL_80211>
+
+=item B<NF_SLL_PROTOCOL_PPPIPCP>
+
+=item B<NF_SLL_PROTOCOL_RARP>
+
+=item B<NF_SLL_PROTOCOL_DDP>
+
+=item B<NF_SLL_PROTOCOL_AARP>
+
+=item B<NF_SLL_PROTOCOL_PPPCCP>
+
+=item B<NF_SLL_PROTOCOL_WCP>
+
+=item B<NF_SLL_PROTOCOL_8021Q>
+
+=item B<NF_SLL_PROTOCOL_IPX>
+
+=item B<NF_SLL_PROTOCOL_STP>
+
+=item B<NF_SLL_PROTOCOL_IPv6>
+
+=item B<NF_SLL_PROTOCOL_WLCCP>
+
+=item B<NF_SLL_PROTOCOL_PPPoED>
+
+=item B<NF_SLL_PROTOCOL_PPPoES>
+
+=item B<NF_SLL_PROTOCOL_8021X>
+
+=item B<NF_SLL_PROTOCOL_AoE>
+
+=item B<NF_SLL_PROTOCOL_80211I>
+
+=item B<NF_SLL_PROTOCOL_LLDP>
+
+=item B<NF_SLL_PROTOCOL_LOOP>
+
+=item B<NF_SLL_PROTOCOL_VLAN>
+
+=item B<NF_SLL_PROTOCOL_PPPPAP>
+
+=item B<NF_SLL_PROTOCOL_PPPCHAP>
 
 Various supported encapsulated layer types.
 
-=item B<NP_SLL_HDR_LEN>
-
-=item B<NP_SLL_ADDRESS_TYPE_512>
+=item B<NF_SLL_ADDRESS_TYPE_512>
 
 =back
+
+=head1 SEE ALSO
+
+L<Net::Frame::Layer>
 
 =head1 AUTHOR
 

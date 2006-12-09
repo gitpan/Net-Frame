@@ -2,31 +2,34 @@
 use strict;
 use warnings;
 
+my $oDump;
+my $target = shift || die("Specify target\n");
+
 use Net::Write::Layer2;
 use Net::Frame::Device;
 use Net::Frame::Simple;
-use Net::Frame::Dump;
+use Net::Frame::Dump::Online;
 
 use Net::Frame::ETH qw(:consts);
 use Net::Frame::ARP;
 
-my $oDevice = Net::Frame::Device->new(target => $ARGV[0]);
+my $oDevice = Net::Frame::Device->new(target => $target);
 
 my $eth = Net::Frame::ETH->new(
    src  => $oDevice->mac,
-   type => NP_ETH_TYPE_ARP,
+   type => NF_ETH_TYPE_ARP,
 );
 my $arp = Net::Frame::ARP->new(
    src   => $oDevice->mac,
    srcIp => $oDevice->ip,
-   dstIp => $ARGV[0],
+   dstIp => $target,
 );
 
 my $oWrite = Net::Write::Layer2->new(
    dev => $oDevice->dev,
 );
 
-my $oDump = Net::Frame::Dump->new(
+$oDump = Net::Frame::Dump::Online->new(
    dev => $oDevice->dev,
 );
 $oDump->start;
@@ -45,5 +48,4 @@ until ($oDump->timeout) {
    }
 }
 
-$oDump->stop;
-$oDump->clean;
+END { $oDump && $oDump->isRunning && $oDump->stop }

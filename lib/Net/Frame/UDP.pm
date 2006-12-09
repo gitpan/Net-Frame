@@ -1,24 +1,24 @@
 #
-# $Id: UDP.pm,v 1.6 2006/12/06 21:20:51 gomor Exp $
+# $Id: UDP.pm,v 1.9 2006/12/09 17:33:07 gomor Exp $
 #
 package Net::Frame::UDP;
 use strict;
 use warnings;
 
-use Net::Frame::Layer qw(:consts);
+use Net::Frame::Layer qw(:consts :subs);
 require Exporter;
 our @ISA = qw(Net::Frame::Layer Exporter);
 
 our %EXPORT_TAGS = (
    consts => [qw(
-      NP_UDP_HDR_LEN
+      NF_UDP_HDR_LEN
    )],
 );
 our @EXPORT_OK = (
    @{$EXPORT_TAGS{consts}},
 );
 
-use constant NP_UDP_HDR_LEN => 8;
+use constant NF_UDP_HDR_LEN => 8;
 
 our @AS = qw(
    src
@@ -30,8 +30,6 @@ __PACKAGE__->cgBuildIndices;
 __PACKAGE__->cgBuildAccessorsScalar(\@AS);
 
 no strict 'vars';
-
-use Net::Frame::Utils qw(inetChecksum getRandomHighPort inetAton inet6Aton);
 
 sub new {
    shift->SUPER::new(
@@ -78,7 +76,7 @@ sub unpack {
    $self;
 }
 
-sub getLength { NP_UDP_HDR_LEN }
+sub getLength { NF_UDP_HDR_LEN }
 
 sub getPayloadLength { shift->SUPER::getPayloadLength }
 
@@ -119,7 +117,7 @@ sub computeChecksums {
    1;
 }
 
-sub encapsulate { NP_LAYER_NONE }
+sub encapsulate { shift->[$__nextLayer] }
 
 sub getKey {
    my $self = shift;
@@ -157,19 +155,21 @@ Net::Frame::UDP - User Datagram Protocol layer object
 
 =head1 SYNOPSIS
 
-   use Net::Packet::Consts qw(:udp);
-   require Net::Packet::UDP;
+   use Net::Frame::UDP qw(:consts);
 
    # Build a layer
-   my $layer = Net::Packet::UDP->new(
-      dst => 31222,
+   my $layer = Net::Frame::UDP->new(
+      src      => getRandomHighPort(),
+      dst      => 0,
+      length   => 0,
+      checksum => 0,
    );
    $layer->pack;
 
-   print 'RAW: '.unpack('H*', $layer->raw)."\n";
+   print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Packet::UDP->new(raw = $raw);
+   my $layer = Net::Frame::UDP->new(raw = $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -181,7 +181,7 @@ This modules implements the encoding and decoding of the UDP layer.
 
 RFC: ftp://ftp.rfc-editor.org/in-notes/rfc768.txt
 
-See also B<Net::Packet::Layer> and B<Net::Packet::Layer4> for other attributes and methods.
+See also B<Net::Frame::Layer> for other attributes and methods.
 
 =head1 ATTRIBUTES
 
@@ -203,55 +203,81 @@ Checksum of the datagram.
 
 =back
 
+The following are inherited attributes. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<raw>
+
+=item B<payload>
+
+=item B<nextLayer>
+
+=back
+
 =head1 METHODS
 
 =over 4
 
 =item B<new>
 
-Object constructor. You can pass attributes that will overwrite default ones. Default values:
+=item B<new> (hash)
 
-src:      getRandomHighPort()
-
-dst:      0
-
-length:   0
-
-checksum: 0
-
-=item B<recv>
-
-Will search for a matching replies in B<framesSorted> or B<frames> from a B<Net::Packet::Dump> object.
-
-=item B<pack>
-
-Packs all attributes into a raw format, in order to inject to network. Returns 1 on success, undef otherwise.
-
-=item B<unpack>
-
-Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
-
-=item B<getPayloadLength>
-
-Returns the length in bytes of payload (layer 7 object).
-
-=item B<computeChecksums>
+Object constructor. You can pass attributes that will overwrite default ones. See B<SYNOPSIS> for default values.
 
 =item B<computeLengths>
 
-=item B<encapsulate>
+Computes various lengths contained within this layer.
+
+=item B<computeChecksums> ({ type => PROTO, src => IP, dst => IP })
+
+In order to compute checksums of TCP, you need to pass the protocol type (IPv4, IPv6), the source and destination IP addresses (IPv4 for IPv4, IPv6 for IPv6).
 
 =item B<getKey>
 
 =item B<getKeyReverse>
 
-=item B<match>
+These two methods are basically used to increase the speed when using B<recv> method from B<Net::Frame::Simple>. Usually, you write them when you need to write B<match> method.
+
+=item B<match> (Net::Frame::UDP object)
+
+This method is mostly used internally. You pass a B<Net::Frame::ARP> layer as a parameter, and it returns true if this is a response corresponding for the request, or returns false if not.
+
+=back
+
+The following are inherited methods. Some of them may be overriden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<layer>
+
+=item B<computeLengths>
+
+=item B<computeChecksums>
+
+=item B<pack>
+
+=item B<unpack>
+
+=item B<encapsulate>
 
 =item B<getLength>
 
+=item B<getPayloadLength>
+
 =item B<print>
 
+=item B<dump>
+
 =back
+
+=head1 CONSTANTS
+
+No constants here.
+
+=head1 SEE ALSO
+
+L<Net::Frame::Layer>
 
 =head1 AUTHOR
 

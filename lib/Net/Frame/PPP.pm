@@ -1,5 +1,5 @@
 #
-# $Id: PPP.pm,v 1.6 2006/12/06 21:19:40 gomor Exp $
+# $Id: PPP.pm,v 1.9 2006/12/09 17:32:19 gomor Exp $
 #
 package Net::Frame::PPP;
 use strict;
@@ -11,28 +11,26 @@ our @ISA = qw(Net::Frame::Layer Exporter);
 
 our %EXPORT_TAGS = (
    consts => [qw(
-      NP_PPP_HDR_LEN
-      NP_PPP_PROTOCOL_USER
-      NP_PPP_PROTOCOL_IPv4
-      NP_PPP_PROTOCOL_DDP
-      NP_PPP_PROTOCOL_IPX
-      NP_PPP_PROTOCOL_IPv6
-      NP_PPP_PROTOCOL_CDP
-      NP_PPP_PROTOCOL_PPPLCP
+      NF_PPP_HDR_LEN
+      NF_PPP_PROTOCOL_IPv4
+      NF_PPP_PROTOCOL_DDP
+      NF_PPP_PROTOCOL_IPX
+      NF_PPP_PROTOCOL_IPv6
+      NF_PPP_PROTOCOL_CDP
+      NF_PPP_PROTOCOL_PPPLCP
    )],
 );
 our @EXPORT_OK = (
    @{$EXPORT_TAGS{consts}},
 );
 
-use constant NP_PPP_HDR_LEN         => 4;
-use constant NP_PPP_PROTOCOL_USER   => 0x0000;
-use constant NP_PPP_PROTOCOL_IPv4   => 0x0021;
-use constant NP_PPP_PROTOCOL_DDP    => 0x0029;
-use constant NP_PPP_PROTOCOL_IPX    => 0x002b;
-use constant NP_PPP_PROTOCOL_IPv6   => 0x0057;
-use constant NP_PPP_PROTOCOL_CDP    => 0x0207;
-use constant NP_PPP_PROTOCOL_PPPLCP => 0xc021;
+use constant NF_PPP_HDR_LEN         => 4;
+use constant NF_PPP_PROTOCOL_IPv4   => 0x0021;
+use constant NF_PPP_PROTOCOL_DDP    => 0x0029;
+use constant NF_PPP_PROTOCOL_IPX    => 0x002b;
+use constant NF_PPP_PROTOCOL_IPv6   => 0x0057;
+use constant NF_PPP_PROTOCOL_CDP    => 0x0207;
+use constant NF_PPP_PROTOCOL_PPPLCP => 0xc021;
 
 our @AS = qw(
    address
@@ -48,12 +46,12 @@ sub new {
    shift->SUPER::new(
       address  => 0xff,
       control  => 0x03,
-      protocol => NP_PPP_PROTOCOL_IPv4,
+      protocol => NF_PPP_PROTOCOL_IPv4,
       @_,
    );
 }
 
-sub getLength { NP_PPP_HDR_LEN }
+sub getLength { NF_PPP_HDR_LEN }
 
 sub pack {
    my $self = shift;
@@ -81,16 +79,20 @@ sub unpack {
 }
 
 sub encapsulate {
+   my $self = shift;
+
+   return $self->[$__nextLayer] if $self->[$__nextLayer];
+
    my $types = {
-      NP_PPP_PROTOCOL_IPv4()   => 'IPv4',
-      NP_PPP_PROTOCOL_DDP()    => 'DDP',
-      NP_PPP_PROTOCOL_IPX()    => 'IPX',
-      NP_PPP_PROTOCOL_IPv6()   => 'IPv6',
-      NP_PPP_PROTOCOL_CDP()    => 'CDP',
-      NP_PPP_PROTOCOL_PPPLCP() => 'PPPLCP',
+      NF_PPP_PROTOCOL_IPv4()   => 'IPv4',
+      NF_PPP_PROTOCOL_DDP()    => 'DDP',
+      NF_PPP_PROTOCOL_IPX()    => 'IPX',
+      NF_PPP_PROTOCOL_IPv6()   => 'IPv6',
+      NF_PPP_PROTOCOL_CDP()    => 'CDP',
+      NF_PPP_PROTOCOL_PPPLCP() => 'PPPLCP',
    };
 
-   $types->{shift->[$__protocol]} || $self->[$__nextLayer];
+   $types->{$self->[$__protocol]} || NF_LAYER_UNKNOWN;
 }
 
 sub print {
@@ -111,19 +113,20 @@ Net::Frame::PPP - Point-to-Point Protocol layer object
 
 =head1 SYNOPSIS
 
-   use Net::Packet::Consts qw(:ppp);
-   require Net::Packet::PPP;
+   use Net::Frame::PPP qw(:consts);
 
    # Build a layer
-   my $layer = Net::Packet::PPP->new(
-      protocol => NP_PPP_PROTOCOL_IPv4,
+   my $layer = Net::Frame::PPP->new(
+      address  => 0xff,
+      control  => 0x03,
+      protocol => NF_PPP_PROTOCOL_IPv4,
    );
    $layer->pack;
 
-   print 'RAW: '.unpack('H*', $layer->raw)."\n";
+   print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Packet::PPP->new(raw => $raw);
+   my $layer = Net::Frame::PPP->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -133,13 +136,29 @@ Net::Frame::PPP - Point-to-Point Protocol layer object
 
 This modules implements the encoding and decoding of the Point-to-Point Protocol layer.
 
-See also B<Net::Packet::Layer> and B<Net::Packet::Layer2> for other attributes and methods.
+See also B<Net::Frame::Layer> for other attributes and methods.
 
 =head1 ATTRIBUTES
 
 =over 4
 
+=item B<address> - 8 bits
+
+=item B<control> - 8 bits
+
 =item B<protocol> - 16 bits
+
+=back
+
+The following are inherited attributes. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<raw>
+
+=item B<payload>
+
+=item B<nextLayer>
 
 =back
 
@@ -149,43 +168,63 @@ See also B<Net::Packet::Layer> and B<Net::Packet::Layer2> for other attributes a
 
 =item B<new>
 
-Object constructor. You can pass attributes that will overwrite default ones. Default values:
+=item B<new> (hash)
 
-protocol: NP_PPP_PROTOCOL_IPv4
+Object constructor. You can pass attributes that will overwrite default ones. See B<SYNOPSIS> for default values.
+
+=back
+
+The following are inherited methods. Some of them may be overriden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<layer>
+
+=item B<computeLengths>
+
+=item B<computeChecksums>
 
 =item B<pack>
 
-Packs all attributes into a raw format, in order to inject to network. Returns 1 on success, undef otherwise.
-
 =item B<unpack>
-
-Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
 
 =item B<encapsulate>
 
 =item B<getLength>
 
+=item B<getPayloadLength>
+
 =item B<print>
+
+=item B<dump>
 
 =back
 
 =head1 CONSTANTS
 
-Load them: use Net::Packet::Consts qw(:ppp);
+Load them: use Net::Frame::PPP qw(:consts);
 
 =over 4
 
-=item B<NP_PPP_HDR_LEN>
+=item B<NF_PPP_PROTOCOL_IPv4>
 
-PPP header length.
+=item B<NF_PPP_PROTOCOL_DDP>
 
-=item B<NP_PPP_PROTOCOL_IPv4>
+=item B<NF_PPP_PROTOCOL_IPX>
 
-=item B<NP_PPP_PROTOCOL_PPPLCP>
+=item B<NF_PPP_PROTOCOL_IPv6>
+
+=item B<NF_PPP_PROTOCOL_CDP>
+
+=item B<NF_PPP_PROTOCOL_PPPLCP>
 
 Various supported encapsulated layer types.
 
 =back
+
+=head1 SEE ALSO
+
+L<Net::Frame::Layer>
 
 =head1 AUTHOR
 

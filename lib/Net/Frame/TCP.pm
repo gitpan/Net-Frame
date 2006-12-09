@@ -1,40 +1,40 @@
 #
-# $Id: TCP.pm,v 1.5 2006/12/06 21:20:38 gomor Exp $
+# $Id: TCP.pm,v 1.8 2006/12/09 17:33:07 gomor Exp $
 #
 package Net::Frame::TCP;
 use strict;
 use warnings;
 
-use Net::Frame::Layer qw(:consts);
+use Net::Frame::Layer qw(:consts :subs);
 require Exporter;
 our @ISA = qw(Net::Frame::Layer Exporter);
 
 our %EXPORT_TAGS = (
    consts => [qw(
-      NP_TCP_HDR_LEN
-      NP_TCP_FLAGS_FIN
-      NP_TCP_FLAGS_SYN
-      NP_TCP_FLAGS_RST
-      NP_TCP_FLAGS_PSH
-      NP_TCP_FLAGS_ACK
-      NP_TCP_FLAGS_URG
-      NP_TCP_FLAGS_ECE
-      NP_TCP_FLAGS_CWR
+      NF_TCP_HDR_LEN
+      NF_TCP_FLAGS_FIN
+      NF_TCP_FLAGS_SYN
+      NF_TCP_FLAGS_RST
+      NF_TCP_FLAGS_PSH
+      NF_TCP_FLAGS_ACK
+      NF_TCP_FLAGS_URG
+      NF_TCP_FLAGS_ECE
+      NF_TCP_FLAGS_CWR
    )],
 );
 our @EXPORT_OK = (
    @{$EXPORT_TAGS{consts}},
 );
 
-use constant NP_TCP_HDR_LEN  => 20;
-use constant NP_TCP_FLAGS_FIN => 0x01;
-use constant NP_TCP_FLAGS_SYN => 0x02;
-use constant NP_TCP_FLAGS_RST => 0x04;
-use constant NP_TCP_FLAGS_PSH => 0x08;
-use constant NP_TCP_FLAGS_ACK => 0x10;
-use constant NP_TCP_FLAGS_URG => 0x20;
-use constant NP_TCP_FLAGS_ECE => 0x40;
-use constant NP_TCP_FLAGS_CWR => 0x80;
+use constant NF_TCP_HDR_LEN  => 20;
+use constant NF_TCP_FLAGS_FIN => 0x01;
+use constant NF_TCP_FLAGS_SYN => 0x02;
+use constant NF_TCP_FLAGS_RST => 0x04;
+use constant NF_TCP_FLAGS_PSH => 0x08;
+use constant NF_TCP_FLAGS_ACK => 0x10;
+use constant NF_TCP_FLAGS_URG => 0x20;
+use constant NF_TCP_FLAGS_ECE => 0x40;
+use constant NF_TCP_FLAGS_CWR => 0x80;
 
 our @AS = qw(
    src
@@ -54,9 +54,6 @@ __PACKAGE__->cgBuildAccessorsScalar(\@AS);
 
 no strict 'vars';
 
-use Net::Frame::Utils qw(inetChecksum getRandomHighPort getRandom32bitsInt
-   inetAton inet6Aton);
-
 sub new {
    shift->SUPER::new(
       src      => getRandomHighPort(),
@@ -65,7 +62,7 @@ sub new {
       ack      => 0,
       x2       => 0,
       off      => 0,
-      flags    => NP_TCP_FLAGS_SYN,
+      flags    => NF_TCP_FLAGS_SYN,
       win      => 0xffff,
       checksum => 0,
       urp      => 0,
@@ -140,7 +137,7 @@ sub getLength { my $self = shift; $self->[$__off] ? $self->[$__off] * 4 : 0 }
 sub getOptionsLength {
    my $self = shift;
    my $gLen = $self->getLength;
-   my $hLen = NP_TCP_HDR_LEN;
+   my $hLen = NF_TCP_HDR_LEN;
    $gLen > $hLen ? $gLen - $hLen : 0;
 }
 
@@ -151,7 +148,7 @@ sub computeLengths {
 
    my $optLen = ($self->[$__options] && length($self->[$__options])) || 0;
 
-   my $hLen = NP_TCP_HDR_LEN + $self->getOptionsLength;
+   my $hLen = NF_TCP_HDR_LEN + $self->getOptionsLength;
    $self->[$__off] = ($hLen + $optLen) / 4;
 }
 
@@ -196,13 +193,13 @@ sub computeChecksums {
    1;
 }
 
-sub encapsulate { NP_LAYER_NONE }
+sub encapsulate { shift->[$__nextLayer] }
 
 sub match {
    my $self = shift;
    my ($with) = @_;
       ($with->[$__ack] == $self->[$__seq] + 1)
-   || ($with->[$__flags] & NP_TCP_FLAGS_RST);
+   || ($with->[$__flags] & NF_TCP_FLAGS_RST);
 }
 
 sub getKey {
@@ -247,20 +244,28 @@ Net::Frame::TCP - Transmission Control Protocol layer object
 
 =head1 SYNOPSIS
 
-   use Net::Packet::Consts qw(:tcp);
-   require Net::Packet::TCP;
+   use Net::Frame::TCP qw(:consts);
 
    # Build a layer
-   my $layer = Net::Packet::TCP->new(
-      dst     => 22,
-      options => "\x02\x04\x05\xb4", # MSS=1460
+   my $layer = Net::Frame::TCP->new(
+      src      => getRandomHighPort(),
+      dst      => 0,
+      seq      => getRandom32bitsInt(),
+      ack      => 0,
+      x2       => 0,
+      off      => 0,
+      flags    => NF_TCP_FLAGS_SYN,
+      win      => 0xffff,
+      checksum => 0,
+      urp      => 0,
+      options  => '',
    );
    $layer->pack;
 
-   print 'RAW: '.unpack('H*', $layer->raw)."\n";
+   print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Packet::TCP->new(raw => $raw);
+   my $layer = Net::Frame::TCP->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -272,7 +277,7 @@ This modules implements the encoding and decoding of the TCP layer.
 
 RFC: ftp://ftp.rfc-editor.org/in-notes/rfc793.txt
       
-See also B<Net::Packet::Layer> and B<Net::Packet::Layer4> for other attributes and methods.
+See also B<Net::Frame::Layer> for other attributes and methods.
 
 =head1 ATTRIBUTES
 
@@ -320,47 +325,27 @@ TCP options, as a hexadecimal string.
 
 =back
 
+The following are inherited attributes. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<raw>
+
+=item B<payload>
+
+=item B<nextLayer>
+
+=back
+
 =head1 METHODS
 
 =over 4
 
 =item B<new>
 
-Object constructor. You can pass attributes that will overwrite default ones. Default values:
+=item B<new> (hash)
 
-src:      getRandomHighPort()
-
-dst:      0
-
-seq:      getRandom32bitsInt()
-
-ack:      0
-
-x2:       0
-
-off:      0
-
-flags:    NP_TCP_FLAGS_SYN
-
-win:      0xffff
-
-checksum: 0
-
-urp:      0
-
-options:  ""
-
-=item B<recv>
-
-Will search for a matching replies in B<framesSorted> or B<frames> from a B<Net::Packet::Dump> object.
-
-=item B<pack>
-
-Packs all attributes into a raw format, in order to inject to network. Returns 1 on success, undef otherwise.
-
-=item B<unpack>
-
-Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
+Object constructor. You can pass attributes that will overwrite default ones. See B<SYNOPSIS> for default values.
 
 =item B<getHeaderLength>
 
@@ -370,17 +355,41 @@ Returns the header length in bytes, not including TCP options.
 
 Returns options length in bytes.
 
-=item B<computeChecksums>
-
 =item B<computeLengths>
 
-=item B<encapsulate>
+Computes various lengths contained within this layer.
+
+=item B<computeChecksums> ({ type => PROTO, src => IP, dst => IP })
+
+In order to compute checksums of TCP, you need to pass the protocol type (IPv4, IPv6), the source and destination IP addresses (IPv4 for IPv4, IPv6 for IPv6).
 
 =item B<getKey>
 
 =item B<getKeyReverse>
 
-=item B<match>
+These two methods are basically used to increase the speed when using B<recv> method from B<Net::Frame::Simple>. Usually, you write them when you need to write B<match> method.
+
+=item B<match> (Net::Frame::TCP object)
+
+This method is mostly used internally. You pass a B<Net::Frame::ARP> layer as a parameter, and it returns true if this is a response corresponding for the request, or returns false if not.
+
+=back
+
+The following are inherited methods. Some of them may be overriden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<layer>
+
+=item B<computeLengths>
+
+=item B<computeChecksums>
+
+=item B<pack>
+
+=item B<unpack>
+
+=item B<encapsulate>
 
 =item B<getLength>
 
@@ -388,33 +397,39 @@ Returns options length in bytes.
 
 =item B<print>
 
+=item B<dump>
+
 =back
 
 =head1 CONSTANTS
 
-Load them: use Net::Packet::Consts qw(:tcp);
+Load them: use Net::Frame::TCP qw(:consts);
 
 =over 4
 
-=item B<NP_TCP_FLAGS_FIN>
+=item B<NF_TCP_FLAGS_FIN>
 
-=item B<NP_TCP_FLAGS_SYN>
+=item B<NF_TCP_FLAGS_SYN>
 
-=item B<NP_TCP_FLAGS_RST>
+=item B<NF_TCP_FLAGS_RST>
 
-=item B<NP_TCP_FLAGS_PSH>
+=item B<NF_TCP_FLAGS_PSH>
 
-=item B<NP_TCP_FLAGS_ACK>
+=item B<NF_TCP_FLAGS_ACK>
 
-=item B<NP_TCP_FLAGS_URG>
+=item B<NF_TCP_FLAGS_URG>
 
-=item B<NP_TCP_FLAGS_ECE>
+=item B<NF_TCP_FLAGS_ECE>
 
-=item B<NP_TCP_FLAGS_CWR>
+=item B<NF_TCP_FLAGS_CWR>
 
 TCP flags constants.
 
 =back
+
+=head1 SEE ALSO
+
+L<Net::Frame::Layer>
 
 =head1 AUTHOR
 

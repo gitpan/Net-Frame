@@ -1,80 +1,78 @@
 #
-# $Id: ETH.pm,v 1.6 2006/12/06 21:18:18 gomor Exp $
+# $Id: ETH.pm,v 1.10 2006/12/09 17:33:30 gomor Exp $
 #
 package Net::Frame::ETH;
 use strict;
 use warnings;
 
-use Net::Frame::Layer qw(:consts);
+use Net::Frame::Layer qw(:consts :subs);
 require Exporter;
 our @ISA = qw(Net::Frame::Layer Exporter);
 
 our %EXPORT_TAGS = (
    consts => [qw(
-      NP_ETH_HDR_LEN
-      NP_ETH_ADDR_BROADCAST
-      NP_ETH_TYPE_USER
-      NP_ETH_TYPE_IPv4
-      NP_ETH_TYPE_X25
-      NP_ETH_TYPE_ARP
-      NP_ETH_TYPE_CGMP
-      NP_ETH_TYPE_80211
-      NP_ETH_TYPE_PPPIPCP
-      NP_ETH_TYPE_RARP
-      NP_ETH_TYPE_DDP
-      NP_ETH_TYPE_AARP
-      NP_ETH_TYPE_PPPCCP
-      NP_ETH_TYPE_WCP
-      NP_ETH_TYPE_8021Q
-      NP_ETH_TYPE_IPX
-      NP_ETH_TYPE_STP
-      NP_ETH_TYPE_IPv6
-      NP_ETH_TYPE_WLCCP
-      NP_ETH_TYPE_PPPoED
-      NP_ETH_TYPE_PPPoES
-      NP_ETH_TYPE_8021x
-      NP_ETH_TYPE_AoE
-      NP_ETH_TYPE_80211i
-      NP_ETH_TYPE_LLDP
-      NP_ETH_TYPE_LOOP
-      NP_ETH_TYPE_VLAN
-      NP_ETH_TYPE_PPPPAP
-      NP_ETH_TYPE_PPPCHAP
+      NF_ETH_HDR_LEN
+      NF_ETH_ADDR_BROADCAST
+      NF_ETH_TYPE_IPv4
+      NF_ETH_TYPE_X25
+      NF_ETH_TYPE_ARP
+      NF_ETH_TYPE_CGMP
+      NF_ETH_TYPE_80211
+      NF_ETH_TYPE_PPPIPCP
+      NF_ETH_TYPE_RARP
+      NF_ETH_TYPE_DDP
+      NF_ETH_TYPE_AARP
+      NF_ETH_TYPE_PPPCCP
+      NF_ETH_TYPE_WCP
+      NF_ETH_TYPE_8021Q
+      NF_ETH_TYPE_IPX
+      NF_ETH_TYPE_STP
+      NF_ETH_TYPE_IPv6
+      NF_ETH_TYPE_WLCCP
+      NF_ETH_TYPE_PPPoED
+      NF_ETH_TYPE_PPPoES
+      NF_ETH_TYPE_8021X
+      NF_ETH_TYPE_AoE
+      NF_ETH_TYPE_80211I
+      NF_ETH_TYPE_LLDP
+      NF_ETH_TYPE_LOOP
+      NF_ETH_TYPE_VLAN
+      NF_ETH_TYPE_PPPPAP
+      NF_ETH_TYPE_PPPCHAP
    )],
 );
 our @EXPORT_OK = (
    @{$EXPORT_TAGS{consts}},
 );
 
-use constant NP_ETH_HDR_LEN        => 14;
-use constant NP_ETH_ADDR_BROADCAST => 'ff:ff:ff:ff:ff:ff';
-use constant NP_ETH_TYPE_USER      => 0x0000;
-use constant NP_ETH_TYPE_IPv4      => 0x0800;
-use constant NP_ETH_TYPE_X25       => 0x0805;
-use constant NP_ETH_TYPE_ARP       => 0x0806;
-use constant NP_ETH_TYPE_CGMP      => 0x2001;
-use constant NP_ETH_TYPE_80211     => 0x2452;
-use constant NP_ETH_TYPE_PPPIPCP   => 0x8021;
-use constant NP_ETH_TYPE_RARP      => 0x8035;
-use constant NP_ETH_TYPE_DDP       => 0x809b;
-use constant NP_ETH_TYPE_AARP      => 0x80f3;
-use constant NP_ETH_TYPE_PPPCCP    => 0x80fd;
-use constant NP_ETH_TYPE_WCP       => 0x80ff;
-use constant NP_ETH_TYPE_8021Q     => 0x8100;
-use constant NP_ETH_TYPE_IPX       => 0x8137;
-use constant NP_ETH_TYPE_STP       => 0x8181;
-use constant NP_ETH_TYPE_IPv6      => 0x86dd;
-use constant NP_ETH_TYPE_WLCCP     => 0x872d;
-use constant NP_ETH_TYPE_PPPoED    => 0x8863;
-use constant NP_ETH_TYPE_PPPoES    => 0x8864;
-use constant NP_ETH_TYPE_8021x     => 0x888e;
-use constant NP_ETH_TYPE_AoE       => 0x88a2;
-use constant NP_ETH_TYPE_80211i    => 0x88c7;
-use constant NP_ETH_TYPE_LLDP      => 0x88cc;
-use constant NP_ETH_TYPE_LOOP      => 0x9000;
-use constant NP_ETH_TYPE_VLAN      => 0x9100;
-use constant NP_ETH_TYPE_PPPPAP    => 0xc023;
-use constant NP_ETH_TYPE_PPPCHAP   => 0xc223;
+use constant NF_ETH_HDR_LEN        => 14;
+use constant NF_ETH_ADDR_BROADCAST => 'ff:ff:ff:ff:ff:ff';
+use constant NF_ETH_TYPE_IPv4      => 0x0800;
+use constant NF_ETH_TYPE_X25       => 0x0805;
+use constant NF_ETH_TYPE_ARP       => 0x0806;
+use constant NF_ETH_TYPE_CGMP      => 0x2001;
+use constant NF_ETH_TYPE_80211     => 0x2452;
+use constant NF_ETH_TYPE_PPPIPCP   => 0x8021;
+use constant NF_ETH_TYPE_RARP      => 0x8035;
+use constant NF_ETH_TYPE_DDP       => 0x809b;
+use constant NF_ETH_TYPE_AARP      => 0x80f3;
+use constant NF_ETH_TYPE_PPPCCP    => 0x80fd;
+use constant NF_ETH_TYPE_WCP       => 0x80ff;
+use constant NF_ETH_TYPE_8021Q     => 0x8100;
+use constant NF_ETH_TYPE_IPX       => 0x8137;
+use constant NF_ETH_TYPE_STP       => 0x8181;
+use constant NF_ETH_TYPE_IPv6      => 0x86dd;
+use constant NF_ETH_TYPE_WLCCP     => 0x872d;
+use constant NF_ETH_TYPE_PPPoED    => 0x8863;
+use constant NF_ETH_TYPE_PPPoES    => 0x8864;
+use constant NF_ETH_TYPE_8021X     => 0x888e;
+use constant NF_ETH_TYPE_AoE       => 0x88a2;
+use constant NF_ETH_TYPE_80211I    => 0x88c7;
+use constant NF_ETH_TYPE_LLDP      => 0x88cc;
+use constant NF_ETH_TYPE_LOOP      => 0x9000;
+use constant NF_ETH_TYPE_VLAN      => 0x9100;
+use constant NF_ETH_TYPE_PPPPAP    => 0xc023;
+use constant NF_ETH_TYPE_PPPCHAP   => 0xc223;
 
 our @AS = qw(
    dst
@@ -90,13 +88,11 @@ BEGIN {
 
 no strict 'vars';
 
-use Net::Frame::Utils qw(convertMac);
-
 sub new {
    my $self = shift->SUPER::new(
       src  => '00:00:00:00:00:00',
-      dst  => NP_ETH_ADDR_BROADCAST,
-      type => NP_ETH_TYPE_IPv4,
+      dst  => NF_ETH_ADDR_BROADCAST,
+      type => NF_ETH_TYPE_IPv4,
       @_,
    );
 
@@ -106,7 +102,7 @@ sub new {
    $self;
 }
 
-sub getLength { NP_ETH_HDR_LEN }
+sub getLength { NF_ETH_HDR_LEN }
 
 sub pack {
    my $self = shift;
@@ -139,33 +135,35 @@ sub unpack {
 sub encapsulate {
    my $self = shift;
 
+   return $self->[$__nextLayer] if $self->[$__nextLayer];
+
    my $types = {
-      NP_ETH_TYPE_IPv4()    => 'IPv4',
-      NP_ETH_TYPE_X25()     => 'X25',
-      NP_ETH_TYPE_ARP()     => 'ARP',
-      NP_ETH_TYPE_CGMP()    => 'CGMP',
-      NP_ETH_TYPE_80211()   => '80211',
-      NP_ETH_TYPE_PPPIPCP() => 'PPPIPCP',
-      NP_ETH_TYPE_RARP()    => 'RARP',
-      NP_ETH_TYPE_DDP ()    => 'DDP',
-      NP_ETH_TYPE_AARP()    => 'AARP',
-      NP_ETH_TYPE_PPPCCP()  => 'PPPCCP',
-      NP_ETH_TYPE_WCP()     => 'WCP',
-      NP_ETH_TYPE_8021Q()   => '8021Q',
-      NP_ETH_TYPE_IPX()     => 'IPX',
-      NP_ETH_TYPE_STP()     => 'STP',
-      NP_ETH_TYPE_IPv6()    => 'IPv6',
-      NP_ETH_TYPE_WLCCP()   => 'WLCCP',
-      NP_ETH_TYPE_PPPoED()  => 'PPPoED',
-      NP_ETH_TYPE_PPPoES()  => 'PPPoES',
-      NP_ETH_TYPE_8021x()   => '8021x',
-      NP_ETH_TYPE_AoE()     => 'AoE',
-      NP_ETH_TYPE_80211i()  => '80211i',
-      NP_ETH_TYPE_LLDP()    => 'LLDP',
-      NP_ETH_TYPE_LOOP()    => 'LOOP',
-      NP_ETH_TYPE_VLAN()    => 'VLAN',
-      NP_ETH_TYPE_PPPPAP()  => 'PPPPAP',
-      NP_ETH_TYPE_PPPCHAP() => 'PPPCHAP',
+      NF_ETH_TYPE_IPv4()    => 'IPv4',
+      NF_ETH_TYPE_X25()     => 'X25',
+      NF_ETH_TYPE_ARP()     => 'ARP',
+      NF_ETH_TYPE_CGMP()    => 'CGMP',
+      NF_ETH_TYPE_80211()   => '80211',
+      NF_ETH_TYPE_PPPIPCP() => 'PPPIPCP',
+      NF_ETH_TYPE_RARP()    => 'RARP',
+      NF_ETH_TYPE_DDP ()    => 'DDP',
+      NF_ETH_TYPE_AARP()    => 'AARP',
+      NF_ETH_TYPE_PPPCCP()  => 'PPPCCP',
+      NF_ETH_TYPE_WCP()     => 'WCP',
+      NF_ETH_TYPE_8021Q()   => '8021Q',
+      NF_ETH_TYPE_IPX()     => 'IPX',
+      NF_ETH_TYPE_STP()     => 'STP',
+      NF_ETH_TYPE_IPv6()    => 'IPv6',
+      NF_ETH_TYPE_WLCCP()   => 'WLCCP',
+      NF_ETH_TYPE_PPPoED()  => 'PPPoED',
+      NF_ETH_TYPE_PPPoES()  => 'PPPoES',
+      NF_ETH_TYPE_8021X()   => '8021X',
+      NF_ETH_TYPE_AoE()     => 'AoE',
+      NF_ETH_TYPE_80211I()  => '80211I',
+      NF_ETH_TYPE_LLDP()    => 'LLDP',
+      NF_ETH_TYPE_LOOP()    => 'LOOP',
+      NF_ETH_TYPE_VLAN()    => 'VLAN',
+      NF_ETH_TYPE_PPPPAP()  => 'PPPPAP',
+      NF_ETH_TYPE_PPPCHAP() => 'PPPCHAP',
    };
 
    # Is this a 802.3 layer ?
@@ -174,10 +172,10 @@ sub encapsulate {
       if ($payload =~ /^aaaa/) {
          return 'LLC';
       }
-      return NP_LAYER_UNKNOWN;
+      return NF_LAYER_UNKNOWN;
    }
 
-   $types->{$self->[$__type]} || $self->[$__nextLayer];
+   $types->{$self->[$__type]} || NF_LAYER_UNKNOWN;
 }
 
 sub print {
@@ -206,20 +204,20 @@ Net::Frame::ETH - Ethernet/802.3 layer object
 
 =head1 SYNOPSIS
 
-   use Net::Packet::Consts qw(:eth);
-   require Net::Packet::ETH;
+   use Net::Frame::ETH qw(:consts);
 
    # Build a layer
-   my $layer = Net::Packet::ETH->new(
-      type => NP_ETH_TYPE_IPv6,
-      dst  => "00:11:22:33:44:55",
+   my $layer = Net::Frame::ETH->new(
+      src  => '00:00:00:00:00:00',
+      dst  => NF_ETH_ADDR_BROADCAST,
+      type => NF_ETH_TYPE_IPv4,
    );
    $layer->pack;
 
-   print 'RAW: '.unpack('H*', $layer->raw)."\n";
+   print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Packet::ETH->new(raw => $raw);
+   my $layer = Net::Frame::ETH->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -231,7 +229,7 @@ This modules implements the encoding and decoding of the Ethernet/802.3 layer.
 
 RFC: ftp://ftp.rfc-editor.org/in-notes/rfc894.txt
 
-See also B<Net::Packet::Layer> and B<Net::Packet::Layer2> for other attributes and methods.
+See also B<Net::Frame::Layer> for other attributes and methods.
 
 =head1 ATTRIBUTES
 
@@ -245,11 +243,23 @@ Source and destination MAC addresses, in classical format (00:11:22:33:44:55).
 
 =item B<type>
 
-The encapsulated layer type (IPv4, IPv6 ...) for Ethernet. Values for Ethernet types are greater than 1500. If it is less than 1500, you should use the B<length> attribute (which is an alias of this one), because the layer is considered a 802.3 one. See http://www.iana.org/assignments/ethernet-numbers .
+The encapsulated layer type (IPv4, IPv6 ...) for Ethernet. Values for Ethernet types are greater than 1500. If it is less than 1500 the layer is considered a 802.3 one. See http://www.iana.org/assignments/ethernet-numbers .
 
 =item B<length>
 
 The length of the payload when this layer is a 802.3 one. This is the same attribute as B<type>, but you cannot use it when calling B<new> (you can only use it as an accessor after that).
+
+=back
+
+The following are inherited attributes. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<raw>
+
+=item B<payload>
+
+=item B<nextLayer>
 
 =back
 
@@ -259,58 +269,107 @@ The length of the payload when this layer is a 802.3 one. This is the same attri
 
 =item B<new>
 
-Object constructor. You can pass attributes that will overwrite default ones.
-Default values:
+=item B<new> (hash)
 
-src:         $Env->mac (see B<Net::Packet::Env>)
+Object constructor. You can pass attributes that will overwrite default ones. See B<SYNOPSIS> for default values.
 
-dst:         NP_ETH_ADDR_BROADCAST
+=back
 
-type/length: NP_ETH_TYPE_IPv4
+The following are inherited methods. Some of them may be overriden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<layer>
+
+=item B<computeLengths>
+
+=item B<computeChecksums>
 
 =item B<pack>
 
-Packs all attributes into a raw format, in order to inject to network. Returns 1 on success, undef otherwise.
-
 =item B<unpack>
-
-Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
 
 =item B<encapsulate>
 
 =item B<getLength>
 
+=item B<getPayloadLength>
+
 =item B<print>
+
+=item B<dump>
 
 =back
 
 =head1 CONSTANTS
 
-Load them: use Net::Packet::Consts qw(:eth);
+Load them: use Net::Frame:ETH qw(:consts);
 
 =over 4
 
-=item B<NP_ETH_HDR_LEN>
-
-Ethernet header length in bytes.
-
-=item B<NP_ETH_ADDR_BROADCAST>
+=item B<NF_ETH_ADDR_BROADCAST>
 
 Ethernet broadcast address.
 
-=item B<NP_ETH_TYPE_IPv4>
+=item B<NF_ETH_TYPE_IPv4>
 
-=item B<NP_ETH_TYPE_IPv6>
+=item B<NF_ETH_TYPE_X25>
 
-=item B<NP_ETH_TYPE_ARP>
+=item B<NF_ETH_TYPE_ARP>
 
-=item B<NP_ETH_TYPE_VLAN>
+=item B<NF_ETH_TYPE_CGMP>
 
-=item B<NP_ETH_TYPE_PPPoE>
+=item B<NF_ETH_TYPE_80211>
+
+=item B<NF_ETH_TYPE_PPPIPCP>
+
+=item B<NF_ETH_TYPE_RARP>
+
+=item B<NF_ETH_TYPE_DDP>
+
+=item B<NF_ETH_TYPE_AARP>
+
+=item B<NF_ETH_TYPE_PPPCCP>
+
+=item B<NF_ETH_TYPE_WCP>
+
+=item B<NF_ETH_TYPE_8021Q>
+
+=item B<NF_ETH_TYPE_IPX>
+
+=item B<NF_ETH_TYPE_STP>
+
+=item B<NF_ETH_TYPE_IPv6>
+
+=item B<NF_ETH_TYPE_WLCCP>
+
+=item B<NF_ETH_TYPE_PPPoED>
+
+=item B<NF_ETH_TYPE_PPPoES>
+
+=item B<NF_ETH_TYPE_8021X>
+
+=item B<NF_ETH_TYPE_AoE>
+
+=item B<NF_ETH_TYPE_80211I>
+
+=item B<NF_ETH_TYPE_LLDP>
+
+=item B<NF_ETH_TYPE_LOOP>
+
+=item B<NF_ETH_TYPE_VLAN>
+
+=item B<NF_ETH_TYPE_PPPPAP>
+
+=item B<NF_ETH_TYPE_PPPCHAP>
 
 Various supported Ethernet types.
 
 =back
+
+=head1 SEE ALSO
+
+L<Net::Frame::Layer>
 
 =head1 AUTHOR
 

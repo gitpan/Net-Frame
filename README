@@ -15,6 +15,7 @@ DEPENDENCIES
 This module requires these other modules and libraries:
 
   Perl v5.6.1
+  Bit::Vector
   Class::Gomor
   Net::IPv6Addr
   Net::Libdnet
@@ -22,7 +23,7 @@ This module requires these other modules and libraries:
 
 GETTING HELP
 
-A mailing list is available for all questions concerning Net::Packet, just 
+A mailing list is available for all questions concerning Net::Frame, just 
 send a message to netpacket-users@gomor.org (this is a moderated list).
 
 COPYRIGHT AND LICENSE

@@ -19,7 +19,7 @@ my $oDevice = Net::Frame::Device->new(target => $target);
 my $ip4 = Net::Frame::IPv4->new(
    src => $oDevice->ip,
    dst => $target,
-   protocol => NP_IPv4_PROTOCOL_UDP,
+   protocol => NF_IPv4_PROTOCOL_UDP,
 );
 my $udp = Net::Frame::UDP->new(
    dst     => $port,

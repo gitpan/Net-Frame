@@ -1,13 +1,11 @@
 #
-# $Id: Frame.pm,v 1.4 2006/12/06 21:17:18 gomor Exp $
+# $Id: Frame.pm,v 1.7 2006/12/09 16:30:13 gomor Exp $
 #
 package Net::Frame;
 use strict;
 use warnings;
 
-require v5.6.1;
-
-our $VERSION = '1.00_03';
+our $VERSION = '1.00';
 
 1;
 
@@ -19,7 +17,66 @@ Net::Frame - the base framework for frame crafting
 
 =head1 SYNOPSIS
 
+   # Basic example, send a TCP SYN to a target, using all modules
+   # the framework comprises. It also waits for the response, and 
+   # prints it.
+
+   my $target = '192.168.0.1';
+   my $port   = 22;
+
+   use Net::Frame::Device;
+   use Net::Write::Layer3;
+   use Net::Frame::Simple;
+   use Net::Frame::Dump::Online;
+
+   use Net::Frame::IPv4;
+   use Net::Frame::TCP;
+
+   my $oDevice = Net::Frame::Device->new(target => $target);
+
+   my $ip4 = Net::Frame::IPv4->new(
+      src => $oDevice->ip,
+      dst => $target,
+   );
+   my $tcp = Net::Frame::TCP->new(
+      dst     => $port,
+      options => "\x02\x04\x54\x0b",
+      payload => 'test',
+   );
+   my $oWrite = Net::Write::Layer3->new(dst => $target);
+
+   my $oDump = Net::Frame::Dump::Online->new(dev => $oDevice->dev);
+   $oDump->start;
+
+   my $oSimple = Net::Frame::Simple->new(
+      layers => [ $ip4, $tcp ],
+   );
+   $oWrite->open;
+   $oSimple->send($oWrite);
+   $oWrite->close;
+
+   until ($oDump->timeout) {
+      if (my $recv = $oSimple->recv($oDump)) {
+         print "RECV:\n".$recv->print."\n";
+         last;
+      }
+   }
+
+   $oDump->stop;
+
 =head1 DESCRIPTION
+
+B<Net::Frame> is a fork of B<Net::Packet>. The goal here was to greatly simplify the use of the frame crafting framework. B<Net::Packet> does many things undercover, and it was difficult to document all the thingies.
+
+Also, B<Net::Packet> may suffer from unease of use, because frames were assembled using layers stored in L2, L3, L4 and L7 attributes. B<Net::Frame> removes all this, and is splitted in different modules, for those who only want to use part of the framework, and not whole framework.
+
+Finally, anyone can create a layer, and put it on his CPAN space, because of the modularity B<Net::Frame> offers. For an example, see B<Net::Frame::ICMPv4> on my CPAN space.
+
+B<Net::Frame> does ship with basic layers, to start playing.
+
+=head1 SEE ALSO
+
+L<Net::Frame::Simple>, L<Net::Frame::Device>, L<Net::Frame::Layer>, L<Net::Frame::Dump>, L<Net::Frame::IPv4>, L<Net::Frame::TCP>, L<Net::Write>
 
 =head1 AUTHOR
 

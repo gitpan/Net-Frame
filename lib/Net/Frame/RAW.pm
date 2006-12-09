@@ -1,5 +1,5 @@
 #
-# $Id: RAW.pm,v 1.4 2006/12/06 21:19:48 gomor Exp $
+# $Id: RAW.pm,v 1.7 2006/12/09 17:32:36 gomor Exp $
 #
 package Net::Frame::RAW;
 use strict;
@@ -34,7 +34,9 @@ sub unpack {
 sub encapsulate {
    my $self = shift;
 
-   return NP_LAYER_NONE if ! $self->[$__payload];
+   return $self->[$__nextLayer] if $self->[$__nextLayer];
+
+   return NF_LAYER_NONE if ! $self->[$__payload];
 
    # With RAW layer, we must guess which type is the first layer
    my $payload = CORE::unpack('H*', $self->[$__payload]);
@@ -50,7 +52,7 @@ sub encapsulate {
       return 'ARP';
    }
 
-   $self->[$__nextLayer];
+   NF_LAYER_UNKNOWN;
 }
 
 sub print {
@@ -69,20 +71,16 @@ Net::Frame::RAW - empty layer object
 
 =head1 SYNOPSIS
   
-   #
-   # Usually, you do not use this module directly
-   #
-   # No constants for RAW
-   require Net::Packet::RAW;
+   use Net::Frame::RAW qw(:consts);
 
    # Build a layer
-   my $layer = Net::Packet::RAW->new;
+   my $layer = Net::Frame::RAW->new;
    $layer->pack;
 
-   print 'RAW: '.unpack('H*', $layer->raw)."\n";
+   print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Packet::RAW->new(raw => $raw);
+   my $layer = Net::Frame::RAW->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -92,7 +90,23 @@ Net::Frame::RAW - empty layer object
 
 This modules implements the encoding and decoding of the raw layer 2.
  
-See also B<Net::Packet::Layer> and B<Net::Packet::Layer2> for other attributes and methods.
+See also B<Net::Frame::Layer> for other attributes and methods.
+
+=head1 ATTRIBUTES
+
+No attributes in this layer.
+
+The following are inherited attributes. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<raw>
+
+=item B<payload>
+
+=item B<nextLayer>
+
+=back
 
 =head1 METHODS
 
@@ -100,23 +114,43 @@ See also B<Net::Packet::Layer> and B<Net::Packet::Layer2> for other attributes a
 
 =item B<new>
 
-Object constructor. No default values, because no attributes.
+Object constructor. No default values, because no attributes here.
+
+=back
+
+The following are inherited methods. Some of them may be overriden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
+
+=over 4
+
+=item B<layer>
+
+=item B<computeLengths>
+
+=item B<computeChecksums>
 
 =item B<pack>
 
-Packs all attributes into a raw format, in order to inject to network. Returns 1 on success, undef otherwise.
-
 =item B<unpack>
-
-Unpacks raw data from network and stores attributes into the object. Returns 1 on success, undef otherwise.
 
 =item B<encapsulate>
 
 =item B<getLength>
 
+=item B<getPayloadLength>
+
 =item B<print>
 
+=item B<dump>
+
 =back
+
+=head1 CONSTANTS
+
+No constants here.
+
+=head1 SEE ALSO
+
+L<Net::Frame::Layer>
 
 =head1 AUTHOR
 
