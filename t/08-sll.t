@@ -1,9 +1,9 @@
 use Test;
 BEGIN { plan(tests => 1) }
 
-use Net::Frame::SLL qw(:consts);
+use Net::Frame::Layer::SLL qw(:consts);
 
-my $l = Net::Frame::SLL->new;
+my $l = Net::Frame::Layer::SLL->new;
 $l->pack;
 $l->unpack;
 

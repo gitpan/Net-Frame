@@ -7,21 +7,21 @@ my $target = shift || die("Specify target\n");
 use Net::Frame::Device;
 use Net::Frame::Simple;
 
-use Net::Frame::ETH;
-use Net::Frame::IPv4;
-use Net::Frame::TCP;
+use Net::Frame::Layer::ETH;
+use Net::Frame::Layer::IPv4;
+use Net::Frame::Layer::TCP;
 
 my $oDevice = Net::Frame::Device->new(target => $target);
 
-my $eth = Net::Frame::ETH->new(
+my $eth = Net::Frame::Layer::ETH->new(
    src => $oDevice->mac,
    dst => $oDevice->lookupMac($target),
 );
-my $ip4 = Net::Frame::IPv4->new(
+my $ip4 = Net::Frame::Layer::IPv4->new(
    src => $oDevice->ip,
    dst => $target,
 );
-my $tcp = Net::Frame::TCP->new(
+my $tcp = Net::Frame::Layer::TCP->new(
    options => "\x02\x04\x54\x0b",
 );
 

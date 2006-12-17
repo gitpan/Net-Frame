@@ -1,7 +1,7 @@
 #
-# $Id: SLL.pm,v 1.11 2006/12/09 17:32:48 gomor Exp $
+# $Id: SLL.pm,v 1.12 2006/12/17 15:46:42 gomor Exp $
 #
-package Net::Frame::SLL;
+package Net::Frame::Layer::SLL;
 use strict;
 use warnings;
 
@@ -188,14 +188,14 @@ __END__
 
 =head1 NAME
 
-Net::Frame::SLL - Linux cooked capture layer object
+Net::Frame::Layer::SLL - Linux cooked capture layer object
 
 =head1 SYNOPSIS
 
-   use Net::Frame::SLL qw(:consts);
+   use Net::Frame::Layer::SLL qw(:consts);
 
    # Build a layer
-   my $layer = Net::Frame::SLL->new(
+   my $layer = Net::Frame::Layer::SLL->new(
       packetType    => NF_SLL_PACKET_TYPE_SENT_BY_US,
       addressType   => NF_SLL_ADDRESS_TYPE_512,
       addressLength => 0,
@@ -207,7 +207,7 @@ Net::Frame::SLL - Linux cooked capture layer object
    print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Frame::SLL->new(raw => $raw);
+   my $layer = Net::Frame::Layer::SLL->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -297,7 +297,7 @@ The following are inherited methods. Some of them may be overriden in this layer
 
 =head1 CONSTANTS
 
-Load them: use Net::Frame::SLL qw(:consts);
+Load them: use Net::Frame::Layer::SLL qw(:consts);
 
 =over 4
 

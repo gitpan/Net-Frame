@@ -1,9 +1,9 @@
 use Test;
 BEGIN { plan(tests => 1) }
 
-use Net::Frame::ARP qw(:consts);
+use Net::Frame::Layer::ARP qw(:consts);
 
-my $l = Net::Frame::ARP->new;
+my $l = Net::Frame::Layer::ARP->new;
 $l->pack;
 $l->unpack;
 

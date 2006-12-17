@@ -1,7 +1,7 @@
 #
-# $Id: TCP.pm,v 1.8 2006/12/09 17:33:07 gomor Exp $
+# $Id: TCP.pm,v 1.9 2006/12/17 15:46:22 gomor Exp $
 #
-package Net::Frame::TCP;
+package Net::Frame::Layer::TCP;
 use strict;
 use warnings;
 
@@ -164,7 +164,7 @@ sub computeChecksums {
          inetAton($h->{src}), inetAton($h->{dst}), 0, 6, $payloadLength,
       );
    }
-   elsif ($type eq 'IPv6') {
+   elsif ($h->{type} eq 'IPv6') {
       $phpkt = $self->SUPER::pack('a*a*NnCC',
          inet6Aton($h->{src}), inet6Aton($h->{dst}), $payloadLength, 0, 0, 6,
       );
@@ -240,14 +240,14 @@ __END__
 
 =head1 NAME
 
-Net::Frame::TCP - Transmission Control Protocol layer object
+Net::Frame::Layer::TCP - Transmission Control Protocol layer object
 
 =head1 SYNOPSIS
 
-   use Net::Frame::TCP qw(:consts);
+   use Net::Frame::Layer::TCP qw(:consts);
 
    # Build a layer
-   my $layer = Net::Frame::TCP->new(
+   my $layer = Net::Frame::Layer::TCP->new(
       src      => getRandomHighPort(),
       dst      => 0,
       seq      => getRandom32bitsInt(),
@@ -265,7 +265,7 @@ Net::Frame::TCP - Transmission Control Protocol layer object
    print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Frame::TCP->new(raw => $raw);
+   my $layer = Net::Frame::Layer::TCP->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -369,9 +369,9 @@ In order to compute checksums of TCP, you need to pass the protocol type (IPv4, 
 
 These two methods are basically used to increase the speed when using B<recv> method from B<Net::Frame::Simple>. Usually, you write them when you need to write B<match> method.
 
-=item B<match> (Net::Frame::TCP object)
+=item B<match> (Net::Frame::Layer::TCP object)
 
-This method is mostly used internally. You pass a B<Net::Frame::ARP> layer as a parameter, and it returns true if this is a response corresponding for the request, or returns false if not.
+This method is mostly used internally. You pass a B<Net::Frame::Layer::TCP> layer as a parameter, and it returns true if this is a response corresponding for the request, or returns false if not.
 
 =back
 
@@ -403,7 +403,7 @@ The following are inherited methods. Some of them may be overriden in this layer
 
 =head1 CONSTANTS
 
-Load them: use Net::Frame::TCP qw(:consts);
+Load them: use Net::Frame::Layer::TCP qw(:consts);
 
 =over 4
 

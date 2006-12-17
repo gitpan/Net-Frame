@@ -1,7 +1,7 @@
 #
-# $Id: RAW.pm,v 1.7 2006/12/09 17:32:36 gomor Exp $
+# $Id: RAW.pm,v 1.8 2006/12/17 15:46:42 gomor Exp $
 #
-package Net::Frame::RAW;
+package Net::Frame::Layer::RAW;
 use strict;
 use warnings;
 
@@ -67,20 +67,20 @@ __END__
 
 =head1 NAME
 
-Net::Frame::RAW - empty layer object
+Net::Frame::Layer::RAW - empty layer object
 
 =head1 SYNOPSIS
   
-   use Net::Frame::RAW qw(:consts);
+   use Net::Frame::Layer::RAW qw(:consts);
 
    # Build a layer
-   my $layer = Net::Frame::RAW->new;
+   my $layer = Net::Frame::Layer::RAW->new;
    $layer->pack;
 
    print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Frame::RAW->new(raw => $raw);
+   my $layer = Net::Frame::Layer::RAW->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"

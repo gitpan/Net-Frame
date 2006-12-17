@@ -1,11 +1,11 @@
 #
-# $Id: Frame.pm,v 1.7 2006/12/09 16:30:13 gomor Exp $
+# $Id: Frame.pm,v 1.8 2006/12/17 15:45:24 gomor Exp $
 #
 package Net::Frame;
 use strict;
 use warnings;
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 1;
 
@@ -29,16 +29,16 @@ Net::Frame - the base framework for frame crafting
    use Net::Frame::Simple;
    use Net::Frame::Dump::Online;
 
-   use Net::Frame::IPv4;
-   use Net::Frame::TCP;
+   use Net::Frame::Layer::IPv4;
+   use Net::Frame::Layer::TCP;
 
    my $oDevice = Net::Frame::Device->new(target => $target);
 
-   my $ip4 = Net::Frame::IPv4->new(
+   my $ip4 = Net::Frame::Layer::IPv4->new(
       src => $oDevice->ip,
       dst => $target,
    );
-   my $tcp = Net::Frame::TCP->new(
+   my $tcp = Net::Frame::Layer::TCP->new(
       dst     => $port,
       options => "\x02\x04\x54\x0b",
       payload => 'test',
@@ -70,13 +70,13 @@ B<Net::Frame> is a fork of B<Net::Packet>. The goal here was to greatly simplify
 
 Also, B<Net::Packet> may suffer from unease of use, because frames were assembled using layers stored in L2, L3, L4 and L7 attributes. B<Net::Frame> removes all this, and is splitted in different modules, for those who only want to use part of the framework, and not whole framework.
 
-Finally, anyone can create a layer, and put it on his CPAN space, because of the modularity B<Net::Frame> offers. For an example, see B<Net::Frame::ICMPv4> on my CPAN space.
+Finally, anyone can create a layer, and put it on his CPAN space, because of the modularity B<Net::Frame> offers. For an example, see B<Net::Frame::Layer::ICMPv4> on my CPAN space.
 
 B<Net::Frame> does ship with basic layers, to start playing.
 
 =head1 SEE ALSO
 
-L<Net::Frame::Simple>, L<Net::Frame::Device>, L<Net::Frame::Layer>, L<Net::Frame::Dump>, L<Net::Frame::IPv4>, L<Net::Frame::TCP>, L<Net::Write>
+L<Net::Frame::Simple>, L<Net::Frame::Device>, L<Net::Frame::Layer>, L<Net::Frame::Dump>, L<Net::Frame::Layer::IPv4>, L<Net::Frame::Layer::TCP>, L<Net::Write>
 
 =head1 AUTHOR
 

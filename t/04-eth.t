@@ -1,9 +1,9 @@
 use Test;
 BEGIN { plan(tests => 1) }
 
-use Net::Frame::ETH qw(:consts);
+use Net::Frame::Layer::ETH qw(:consts);
 
-my $l = Net::Frame::ETH->new;
+my $l = Net::Frame::Layer::ETH->new;
 $l->pack;
 $l->unpack;
 

@@ -1,7 +1,7 @@
 #
-# $Id: ETH.pm,v 1.10 2006/12/09 17:33:30 gomor Exp $
+# $Id: ETH.pm,v 1.11 2006/12/17 15:46:42 gomor Exp $
 #
-package Net::Frame::ETH;
+package Net::Frame::Layer::ETH;
 use strict;
 use warnings;
 
@@ -200,14 +200,14 @@ __END__
 
 =head1 NAME
 
-Net::Frame::ETH - Ethernet/802.3 layer object
+Net::Frame::Layer::ETH - Ethernet/802.3 layer object
 
 =head1 SYNOPSIS
 
-   use Net::Frame::ETH qw(:consts);
+   use Net::Frame::Layer::ETH qw(:consts);
 
    # Build a layer
-   my $layer = Net::Frame::ETH->new(
+   my $layer = Net::Frame::Layer::ETH->new(
       src  => '00:00:00:00:00:00',
       dst  => NF_ETH_ADDR_BROADCAST,
       type => NF_ETH_TYPE_IPv4,
@@ -217,7 +217,7 @@ Net::Frame::ETH - Ethernet/802.3 layer object
    print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Frame::ETH->new(raw => $raw);
+   my $layer = Net::Frame::Layer::ETH->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -303,7 +303,7 @@ The following are inherited methods. Some of them may be overriden in this layer
 
 =head1 CONSTANTS
 
-Load them: use Net::Frame:ETH qw(:consts);
+Load them: use Net::Frame::Layer::ETH qw(:consts);
 
 =over 4
 

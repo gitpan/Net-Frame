@@ -1,9 +1,9 @@
 use Test;
 BEGIN { plan(tests => 1) }
 
-use Net::Frame::IPv4 qw(:consts);
+use Net::Frame::Layer::IPv4 qw(:consts);
 
-my $l = Net::Frame::IPv4->new;
+my $l = Net::Frame::Layer::IPv4->new;
 $l->pack;
 $l->unpack;
 

@@ -1,9 +1,9 @@
 use Test;
 BEGIN { plan(tests => 1) }
 
-use Net::Frame::TCP qw(:consts);
+use Net::Frame::Layer::TCP qw(:consts);
 
-my $l = Net::Frame::TCP->new;
+my $l = Net::Frame::Layer::TCP->new;
 $l->pack;
 $l->unpack;
 

@@ -1,5 +1,9 @@
 Revision history for Perl extension Net::Frame.
 
+1.01 Sun Dec 17 17:45:32 CET 2006
+   - UPDATE: moved all layers to Net::Frame::Layer::* namespace
+   - bugfix: IPv6 layer handling in computeLengths() for TCP layer
+
 1.00 Sat Dec  9 18:39:09 CET 2006
    - first public release
 

@@ -1,5 +1,5 @@
 #
-# $Id: Layer.pm,v 1.10 2006/12/09 16:31:48 gomor Exp $
+# $Id: Layer.pm,v 1.11 2006/12/17 15:45:40 gomor Exp $
 #
 package Net::Frame::Layer;
 use strict;
@@ -55,7 +55,7 @@ sub new { shift->SUPER::new(nextLayer => NF_LAYER_NONE, @_) }
 
 sub layer {
    my $layer = ref(shift);
-   $layer =~ s/^Net::Frame:://;
+   $layer =~ s/^Net::Frame::Layer:://;
    $layer;
 }
 
@@ -221,7 +221,7 @@ Object constructor.
 
 =item B<layer>
 
-Returns the string describing the layer (example: 'IPv4' for a B<Net::Frame::IPv4> object).
+Returns the string describing the layer (example: 'IPv4' for a B<Net::Frame::Layer::IPv4> object).
 
 =item B<computeLengths>
 

@@ -1,7 +1,7 @@
 #
-# $Id: PPP.pm,v 1.9 2006/12/09 17:32:19 gomor Exp $
+# $Id: PPP.pm,v 1.10 2006/12/17 15:46:42 gomor Exp $
 #
-package Net::Frame::PPP;
+package Net::Frame::Layer::PPP;
 use strict;
 use warnings;
 
@@ -109,14 +109,14 @@ __END__
 
 =head1 NAME
 
-Net::Frame::PPP - Point-to-Point Protocol layer object
+Net::Frame::Layer::PPP - Point-to-Point Protocol layer object
 
 =head1 SYNOPSIS
 
-   use Net::Frame::PPP qw(:consts);
+   use Net::Frame::Layer::PPP qw(:consts);
 
    # Build a layer
-   my $layer = Net::Frame::PPP->new(
+   my $layer = Net::Frame::Layer::PPP->new(
       address  => 0xff,
       control  => 0x03,
       protocol => NF_PPP_PROTOCOL_IPv4,
@@ -126,7 +126,7 @@ Net::Frame::PPP - Point-to-Point Protocol layer object
    print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Frame::PPP->new(raw => $raw);
+   my $layer = Net::Frame::Layer::PPP->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -202,7 +202,7 @@ The following are inherited methods. Some of them may be overriden in this layer
 
 =head1 CONSTANTS
 
-Load them: use Net::Frame::PPP qw(:consts);
+Load them: use Net::Frame::Layer::PPP qw(:consts);
 
 =over 4
 

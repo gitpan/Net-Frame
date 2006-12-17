@@ -1,7 +1,7 @@
 #
-# $Id: NULL.pm,v 1.8 2006/12/09 17:32:06 gomor Exp $
+# $Id: NULL.pm,v 1.9 2006/12/17 15:46:42 gomor Exp $
 #
-package Net::Frame::NULL;
+package Net::Frame::Layer::NULL;
 use strict;
 use warnings;
 
@@ -140,14 +140,14 @@ __END__
 
 =head1 NAME
 
-Net::Frame::NULL - BSD loopback layer object
+Net::Frame::Layer::NULL - BSD loopback layer object
 
 =head1 SYNOPSIS
 
-   use Net::Frame::NULL qw(:consts);
+   use Net::Frame::Layer::NULL qw(:consts);
 
    # Build a layer
-   my $layer = Net::Frame::NULL->new(
+   my $layer = Net::Frame::Layer::NULL->new(
       type => NF_NULL_TYPE_IPv4,
    );
    $layer->pack;
@@ -155,7 +155,7 @@ Net::Frame::NULL - BSD loopback layer object
    print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Frame::NULL->new(raw => $raw);
+   my $layer = Net::Frame::Layer::NULL->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -229,7 +229,7 @@ The following are inherited methods. Some of them may be overriden in this layer
 
 =head1 CONSTANTS
 
-Load them: use Net::Frame::NULL qw(:consts);
+Load them: use Net::Frame::Layer::NULL qw(:consts);
 
 =over 4
 

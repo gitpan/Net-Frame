@@ -1,7 +1,7 @@
 #
-# $Id: IPv4.pm,v 1.10 2006/12/09 17:31:55 gomor Exp $
+# $Id: IPv4.pm,v 1.12 2006/12/17 16:45:20 gomor Exp $
 #
-package Net::Frame::IPv4;
+package Net::Frame::Layer::IPv4;
 use strict;
 use warnings;
 
@@ -319,14 +319,14 @@ __END__
    
 =head1 NAME
 
-Net::Frame::IPv4 - Internet Protocol v4 layer object
+Net::Frame::Layer::IPv4 - Internet Protocol v4 layer object
 
 =head1 SYNOPSIS
 
-   use Net::Frame::IPv4 qw(:consts);
+   use Net::Frame::Layer::IPv4 qw(:consts);
 
    # Build a layer
-   my $layer = Net::Frame::IPv4->new(
+   my $layer = Net::Frame::Layer::IPv4->new(
       version  => 4,
       tos      => 0,
       id       => getRandom16bitsInt(),
@@ -347,7 +347,7 @@ Net::Frame::IPv4 - Internet Protocol v4 layer object
    print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Frame::IPv4->new(raw => $raw);
+   my $layer = Net::Frame::Layer::IPv4->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -417,7 +417,7 @@ IP options, as a hexadecimal string.
 
 =item B<noFixLen>
 
-Since the byte ordering of B<length> attribute varies from system to system, a subroutine inside this module detects which byte order to use. Sometimes, like when you build B<Net::Frame::8021Q> layers, you may have the need to avoid this. So set it to 1 in order to avoid fixing. Default is 0 (that is to fix).
+Since the byte ordering of B<length> attribute varies from system to system, a subroutine inside this module detects which byte order to use. Sometimes, like when you build B<Net::Frame::Layer::8021Q> layers, you may have the need to avoid this. So set it to 1 in order to avoid fixing. Default is 0 (that is to fix).
 
 =back
 
@@ -489,7 +489,7 @@ The following are inherited methods. Some of them may be overriden in this layer
 
 =head1 CONSTANTS
 
-Load them: use Net::Frame::IPv4 qw(:consts);
+Load them: use Net::Frame::Layer::IPv4 qw(:consts);
 
 =over 4
 

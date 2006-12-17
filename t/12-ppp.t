@@ -1,9 +1,9 @@
 use Test;
 BEGIN { plan(tests => 1) }
 
-use Net::Frame::PPP qw(:consts);
+use Net::Frame::Layer::PPP qw(:consts);
 
-my $l = Net::Frame::PPP->new;
+my $l = Net::Frame::Layer::PPP->new;
 $l->pack;
 $l->unpack;
 

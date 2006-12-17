@@ -10,16 +10,16 @@ use Net::Frame::Device;
 use Net::Frame::Simple;
 use Net::Frame::Dump::Online;
 
-use Net::Frame::ETH qw(:consts);
-use Net::Frame::ARP;
+use Net::Frame::Layer::ETH qw(:consts);
+use Net::Frame::Layer::ARP;
 
 my $oDevice = Net::Frame::Device->new(target => $target);
 
-my $eth = Net::Frame::ETH->new(
+my $eth = Net::Frame::Layer::ETH->new(
    src  => $oDevice->mac,
    type => NF_ETH_TYPE_ARP,
 );
-my $arp = Net::Frame::ARP->new(
+my $arp = Net::Frame::Layer::ARP->new(
    src   => $oDevice->mac,
    srcIp => $oDevice->ip,
    dstIp => $target,

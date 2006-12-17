@@ -1,7 +1,7 @@
 #
-# $Id: ARP.pm,v 1.7 2006/12/09 17:31:18 gomor Exp $
+# $Id: ARP.pm,v 1.8 2006/12/17 15:46:42 gomor Exp $
 #
-package Net::Frame::ARP;
+package Net::Frame::Layer::ARP;
 use strict;
 use warnings;
 
@@ -191,14 +191,14 @@ __END__
 
 =head1 NAME
 
-Net::Frame::ARP - Address Resolution Protocol layer object
+Net::Frame::Layer::ARP - Address Resolution Protocol layer object
 
 =head1 SYNOPSIS
 
-   use Net::Frame::ARP qw(:consts);
+   use Net::Frame::Layer::ARP qw(:consts);
 
    # Build a layer
-   my $layer = Net::Frame::ARP->new(
+   my $layer = Net::Frame::Layer::ARP->new(
       hType   => NF_ARP_HTYPE_ETH,
       pType   => NF_ARP_PTYPE_IPv4,
       hSize   => NF_ARP_HSIZE_ETH,
@@ -214,7 +214,7 @@ Net::Frame::ARP - Address Resolution Protocol layer object
    print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Frame::ARP->new(raw => $raw);
+   my $layer = Net::Frame::Layer::ARP->new(raw => $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -290,9 +290,9 @@ Object constructor. You can pass attributes that will overwrite default ones. Se
 
 These two methods are basically used to increase the speed when using B<recv> method from B<Net::Frame::Simple>. Usually, you write them when you need to write B<match> method.
 
-=item B<match> (Net::Frame::ARP object)
+=item B<match> (Net::Frame::Layer::ARP object)
 
-This method is mostly used internally. You pass a B<Net::Frame::ARP> layer as a parameter, and it returns true if this is a response corresponding for the request, or returns false if not.
+This method is mostly used internally. You pass a B<Net::Frame::Layer::ARP> layer as a parameter, and it returns true if this is a response corresponding for the request, or returns false if not.
 
 =back
 
@@ -324,7 +324,7 @@ The following are inherited methods. Some of them may be overriden in this layer
 
 =head1 CONSTANTS
 
-Load them: use Net::Frame::ARP qw(:consts);
+Load them: use Net::Frame::Layer::ARP qw(:consts);
 
 =over 4
 

@@ -1,9 +1,9 @@
 use Test;
 BEGIN { plan(tests => 1) }
 
-use Net::Frame::NULL qw(:consts);
+use Net::Frame::Layer::NULL qw(:consts);
 
-my $l = Net::Frame::NULL->new;
+my $l = Net::Frame::Layer::NULL->new;
 $l->pack;
 $l->unpack;
 

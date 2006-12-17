@@ -1,7 +1,7 @@
 #
-# $Id: UDP.pm,v 1.9 2006/12/09 17:33:07 gomor Exp $
+# $Id: UDP.pm,v 1.10 2006/12/17 15:46:42 gomor Exp $
 #
-package Net::Frame::UDP;
+package Net::Frame::Layer::UDP;
 use strict;
 use warnings;
 
@@ -151,14 +151,14 @@ __END__
 
 =head1 NAME
 
-Net::Frame::UDP - User Datagram Protocol layer object
+Net::Frame::Layer::UDP - User Datagram Protocol layer object
 
 =head1 SYNOPSIS
 
-   use Net::Frame::UDP qw(:consts);
+   use Net::Frame::Layer::UDP qw(:consts);
 
    # Build a layer
-   my $layer = Net::Frame::UDP->new(
+   my $layer = Net::Frame::Layer::UDP->new(
       src      => getRandomHighPort(),
       dst      => 0,
       length   => 0,
@@ -169,7 +169,7 @@ Net::Frame::UDP - User Datagram Protocol layer object
    print 'RAW: '.$layer->dump."\n";
 
    # Read a raw layer
-   my $layer = Net::Frame::UDP->new(raw = $raw);
+   my $layer = Net::Frame::Layer::UDP->new(raw = $raw);
 
    print $layer->print."\n";
    print 'PAYLOAD: '.unpack('H*', $layer->payload)."\n"
@@ -239,9 +239,9 @@ In order to compute checksums of TCP, you need to pass the protocol type (IPv4, 
 
 These two methods are basically used to increase the speed when using B<recv> method from B<Net::Frame::Simple>. Usually, you write them when you need to write B<match> method.
 
-=item B<match> (Net::Frame::UDP object)
+=item B<match> (Net::Frame::Layer::UDP object)
 
-This method is mostly used internally. You pass a B<Net::Frame::ARP> layer as a parameter, and it returns true if this is a response corresponding for the request, or returns false if not.
+This method is mostly used internally. You pass a B<Net::Frame::Layer::UDP> layer as a parameter, and it returns true if this is a response corresponding for the request, or returns false if not.
 
 =back
 

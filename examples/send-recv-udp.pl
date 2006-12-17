@@ -11,17 +11,17 @@ use Net::Write::Layer3;
 use Net::Frame::Simple;
 use Net::Frame::Dump::Online;
 
-use Net::Frame::IPv4 qw(:consts);
-use Net::Frame::UDP;
+use Net::Frame::Layer::IPv4 qw(:consts);
+use Net::Frame::Layer::UDP;
 
 my $oDevice = Net::Frame::Device->new(target => $target);
 
-my $ip4 = Net::Frame::IPv4->new(
+my $ip4 = Net::Frame::Layer::IPv4->new(
    src => $oDevice->ip,
    dst => $target,
    protocol => NF_IPv4_PROTOCOL_UDP,
 );
-my $udp = Net::Frame::UDP->new(
+my $udp = Net::Frame::Layer::UDP->new(
    dst     => $port,
    payload => 'test',
 );

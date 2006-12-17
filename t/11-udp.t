@@ -1,9 +1,9 @@
 use Test;
 BEGIN { plan(tests => 1) }
 
-use Net::Frame::UDP qw(:consts);
+use Net::Frame::Layer::UDP qw(:consts);
 
-my $l = Net::Frame::UDP->new;
+my $l = Net::Frame::Layer::UDP->new;
 $l->pack;
 $l->unpack;
 
