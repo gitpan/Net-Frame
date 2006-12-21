@@ -1,5 +1,5 @@
 #
-# $Id: Layer.pm,v 1.11 2006/12/17 15:45:40 gomor Exp $
+# $Id: Layer.pm,v 1.12 2006/12/21 22:50:50 gomor Exp $
 #
 package Net::Frame::Layer;
 use strict;
@@ -96,7 +96,8 @@ sub dump { CORE::unpack('H*', shift->raw) }
 #
 
 use Socket;
-use Socket6 qw(NI_NUMERICHOST NI_NUMERICSERV inet_pton inet_ntop);
+use Socket6 qw(NI_NUMERICHOST NI_NUMERICSERV inet_pton inet_ntop getaddrinfo
+   getnameinfo);
 require Net::Libdnet;
 require Net::IPv6Addr;
 
