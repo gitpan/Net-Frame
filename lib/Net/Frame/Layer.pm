@@ -1,5 +1,5 @@
 #
-# $Id: Layer.pm,v 1.12 2006/12/21 22:50:50 gomor Exp $
+# $Id: Layer.pm,v 1.13 2007/01/03 21:41:35 gomor Exp $
 #
 package Net::Frame::Layer;
 use strict;
@@ -98,7 +98,6 @@ sub dump { CORE::unpack('H*', shift->raw) }
 use Socket;
 use Socket6 qw(NI_NUMERICHOST NI_NUMERICSERV inet_pton inet_ntop getaddrinfo
    getnameinfo);
-require Net::Libdnet;
 require Net::IPv6Addr;
 
 sub getHostIpv4Addr {
@@ -334,7 +333,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

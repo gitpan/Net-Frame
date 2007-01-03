@@ -1,5 +1,5 @@
 #
-# $Id: UDP.pm,v 1.10 2006/12/17 15:46:42 gomor Exp $
+# $Id: UDP.pm,v 1.11 2007/01/03 21:43:33 gomor Exp $
 #
 package Net::Frame::Layer::UDP;
 use strict;
@@ -285,7 +285,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

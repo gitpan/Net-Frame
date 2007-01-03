@@ -1,5 +1,5 @@
 #
-# $Id: SLL.pm,v 1.12 2006/12/17 15:46:42 gomor Exp $
+# $Id: SLL.pm,v 1.13 2007/01/03 21:43:04 gomor Exp $
 #
 package Net::Frame::Layer::SLL;
 use strict;
@@ -37,6 +37,7 @@ our %EXPORT_TAGS = (
       NF_SLL_PROTOCOL_AoE
       NF_SLL_PROTOCOL_80211I
       NF_SLL_PROTOCOL_LLDP
+      NF_SLL_PROTOCOL_LLTD
       NF_SLL_PROTOCOL_LOOP
       NF_SLL_PROTOCOL_VLAN
       NF_SLL_PROTOCOL_PPPPAP
@@ -73,6 +74,7 @@ use constant NF_SLL_PROTOCOL_8021X     => 0x888e;
 use constant NF_SLL_PROTOCOL_AoE       => 0x88a2;
 use constant NF_SLL_PROTOCOL_80211I    => 0x88c7;
 use constant NF_SLL_PROTOCOL_LLDP      => 0x88cc;
+use constant NF_SLL_PROTOCOL_LLTD      => 0x88d9;
 use constant NF_SLL_PROTOCOL_LOOP      => 0x9000;
 use constant NF_SLL_PROTOCOL_VLAN      => 0x9100;
 use constant NF_SLL_PROTOCOL_PPPPAP    => 0xc023;
@@ -162,6 +164,7 @@ sub encapsulate {
       NF_SLL_PROTOCOL_AoE()     => 'AoE',
       NF_SLL_PROTOCOL_80211I()  => '80211I',
       NF_SLL_PROTOCOL_LLDP()    => 'LLDP',
+      NF_SLL_PROTOCOL_LLTD()    => 'LLTD',
       NF_SLL_PROTOCOL_LOOP()    => 'LOOP',
       NF_SLL_PROTOCOL_VLAN()    => 'VLAN',
       NF_SLL_PROTOCOL_PPPPAP()  => 'PPPPAP',
@@ -351,6 +354,8 @@ Various possible packet types.
 
 =item B<NF_SLL_PROTOCOL_LLDP>
 
+=item B<NF_SLL_PROTOCOL_LLTD>
+
 =item B<NF_SLL_PROTOCOL_LOOP>
 
 =item B<NF_SLL_PROTOCOL_VLAN>
@@ -375,7 +380,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

@@ -1,5 +1,5 @@
 #
-# $Id: ETH.pm,v 1.11 2006/12/17 15:46:42 gomor Exp $
+# $Id: ETH.pm,v 1.12 2007/01/03 21:43:04 gomor Exp $
 #
 package Net::Frame::Layer::ETH;
 use strict;
@@ -35,6 +35,7 @@ our %EXPORT_TAGS = (
       NF_ETH_TYPE_AoE
       NF_ETH_TYPE_80211I
       NF_ETH_TYPE_LLDP
+      NF_ETH_TYPE_LLTD
       NF_ETH_TYPE_LOOP
       NF_ETH_TYPE_VLAN
       NF_ETH_TYPE_PPPPAP
@@ -69,6 +70,7 @@ use constant NF_ETH_TYPE_8021X     => 0x888e;
 use constant NF_ETH_TYPE_AoE       => 0x88a2;
 use constant NF_ETH_TYPE_80211I    => 0x88c7;
 use constant NF_ETH_TYPE_LLDP      => 0x88cc;
+use constant NF_ETH_TYPE_LLTD      => 0x88d9;
 use constant NF_ETH_TYPE_LOOP      => 0x9000;
 use constant NF_ETH_TYPE_VLAN      => 0x9100;
 use constant NF_ETH_TYPE_PPPPAP    => 0xc023;
@@ -160,6 +162,7 @@ sub encapsulate {
       NF_ETH_TYPE_AoE()     => 'AoE',
       NF_ETH_TYPE_80211I()  => '80211I',
       NF_ETH_TYPE_LLDP()    => 'LLDP',
+      NF_ETH_TYPE_LLTD()    => 'LLTD',
       NF_ETH_TYPE_LOOP()    => 'LOOP',
       NF_ETH_TYPE_VLAN()    => 'VLAN',
       NF_ETH_TYPE_PPPPAP()  => 'PPPPAP',
@@ -355,6 +358,8 @@ Ethernet broadcast address.
 
 =item B<NF_ETH_TYPE_LLDP>
 
+=item B<NF_ETH_TYPE_LLTD>
+
 =item B<NF_ETH_TYPE_LOOP>
 
 =item B<NF_ETH_TYPE_VLAN>
@@ -377,7 +382,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

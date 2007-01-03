@@ -1,5 +1,8 @@
 Revision history for Perl extension Net::Frame.
 
+1.03 Wed Jan  3 22:44:59 CET 2007
+   - update: Net::Libdnet no more required
+
 1.02 Thu Dec 21 23:51:07 CET 2006
    - bugfix: forgot to load some subs for IPv6 subs in Layer.pm
 

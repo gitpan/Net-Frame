@@ -1,5 +1,5 @@
 #
-# $Id: IPv4.pm,v 1.12 2006/12/17 16:45:20 gomor Exp $
+# $Id: IPv4.pm,v 1.13 2007/01/03 21:43:33 gomor Exp $
 #
 package Net::Frame::Layer::IPv4;
 use strict;
@@ -567,7 +567,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
       
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

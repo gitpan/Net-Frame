@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.PL,v 1.4 2006/12/09 13:25:52 gomor Exp $
+# $Id: Makefile.PL,v 1.5 2007/01/03 21:39:28 gomor Exp $
 #
 use ExtUtils::MakeMaker;
 
@@ -14,7 +14,6 @@ WriteMakefile(
    PREREQ_PM     => {
       Class::Gomor  => '1.00',
       Socket6       => 0,
-      Net::Libdnet  => 0,
       Net::IPv6Addr => 0,
       Bit::Vector   => 0,
    },
