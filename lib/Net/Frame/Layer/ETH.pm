@@ -1,5 +1,5 @@
 #
-# $Id: ETH.pm,v 1.12 2007/01/03 21:43:04 gomor Exp $
+# $Id: ETH.pm,v 1.13 2007/03/26 21:20:38 gomor Exp $
 #
 package Net::Frame::Layer::ETH;
 use strict;
@@ -172,7 +172,8 @@ sub encapsulate {
    # Is this a 802.3 layer ?
    if ($self->[$__type] <= 1500 && $self->[$__payload]) {
       my $payload = CORE::unpack('H*', $self->[$__payload]);
-      if ($payload =~ /^aaaa/) {
+      # We consider this is a LLC layer if the payload is more than 6 bytes long
+      if (CORE::length($payload) > 6) {
          return 'LLC';
       }
       return NF_LAYER_UNKNOWN;

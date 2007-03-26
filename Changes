@@ -1,5 +1,9 @@
 Revision history for Perl extension Net::Frame.
 
+1.04 Mon Mar 26 23:19:44 CEST 2007
+   - bugfix: TCP: computeLengths() with options
+   - update: ETH: more checks for next layer decoding (LLC)
+
 1.03 Wed Jan  3 22:44:59 CET 2007
    - update: Net::Libdnet no more required
 

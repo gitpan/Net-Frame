@@ -1,5 +1,5 @@
 #
-# $Id: TCP.pm,v 1.10 2007/01/03 21:43:33 gomor Exp $
+# $Id: TCP.pm,v 1.11 2007/03/26 21:20:21 gomor Exp $
 #
 package Net::Frame::Layer::TCP;
 use strict;
@@ -148,7 +148,7 @@ sub computeLengths {
 
    my $optLen = ($self->[$__options] && length($self->[$__options])) || 0;
 
-   my $hLen = NF_TCP_HDR_LEN + $self->getOptionsLength;
+   my $hLen = NF_TCP_HDR_LEN;
    $self->[$__off] = ($hLen + $optLen) / 4;
 }
 
