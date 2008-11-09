@@ -23,7 +23,6 @@ LICENSE
 LICENSE.Artistic
 Makefile.PL
 MANIFEST			This list of files
-META.yml
 README
 t/01-use.t
 t/02-pod-coverage.t
@@ -37,3 +36,4 @@ t/09-tcp.t
 t/10-null.t
 t/11-udp.t
 t/12-ppp.t
+META.yml                                 Module meta-data (added by MakeMaker)

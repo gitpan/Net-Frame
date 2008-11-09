@@ -1,5 +1,5 @@
 #
-# $Id: RAW.pm,v 1.9 2007/01/03 21:43:33 gomor Exp $
+# $Id: RAW.pm 301 2008-11-09 21:52:06Z gomor $
 #
 package Net::Frame::Layer::RAW;
 use strict;
@@ -52,7 +52,7 @@ sub encapsulate {
       return 'ARP';
    }
 
-   NF_LAYER_UNKNOWN;
+   return NF_LAYER_UNKNOWN;
 }
 
 sub print {
@@ -73,7 +73,7 @@ Net::Frame::Layer::RAW - empty layer object
   
    use Net::Frame::Layer::RAW qw(:consts);
 
-   # Build a layer
+   # Build a layer
    my $layer = Net::Frame::Layer::RAW->new;
    $layer->pack;
 
@@ -158,7 +158,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

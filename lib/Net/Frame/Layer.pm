@@ -1,5 +1,5 @@
 #
-# $Id: Layer.pm,v 1.13 2007/01/03 21:41:35 gomor Exp $
+# $Id: Layer.pm 301 2008-11-09 21:52:06Z gomor $
 #
 package Net::Frame::Layer;
 use strict;
@@ -333,7 +333,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

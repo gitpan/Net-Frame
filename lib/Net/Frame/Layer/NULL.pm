@@ -1,5 +1,5 @@
 #
-# $Id: NULL.pm,v 1.10 2007/01/03 21:43:33 gomor Exp $
+# $Id: NULL.pm 301 2008-11-09 21:52:06Z gomor $
 #
 package Net::Frame::Layer::NULL;
 use strict;
@@ -96,35 +96,35 @@ sub unpack {
    $self;
 }
 
+our $Next = {
+   NF_NULL_TYPE_IPv4()   => 'IPv4',
+   NF_NULL_TYPE_ARP()    => 'ARP',
+   NF_NULL_TYPE_CGMP()   => 'CGMP',
+   NF_NULL_TYPE_80211()  => '80211',
+   NF_NULL_TYPE_DDP()    => 'DDP',
+   NF_NULL_TYPE_AARP()   => 'AARP',
+   NF_NULL_TYPE_WCP()    => 'WCP',
+   NF_NULL_TYPE_8021Q()  => '8021Q',
+   NF_NULL_TYPE_IPX()    => 'IPX',
+   NF_NULL_TYPE_STP()    => 'STP',
+   NF_NULL_TYPE_IPv6()   => 'IPv6',
+   NF_NULL_TYPE_WLCCP()  => 'WLCCP',
+   NF_NULL_TYPE_PPPoED() => 'PPPoED',
+   NF_NULL_TYPE_PPPoES() => 'PPPoES',
+   NF_NULL_TYPE_8021X()  => '8021X',
+   NF_NULL_TYPE_AoE()    => 'AoE',
+   NF_NULL_TYPE_LLDP()   => 'LLDP',
+   NF_NULL_TYPE_LOOP()   => 'LOOP',
+   NF_NULL_TYPE_VLAN()   => 'VLAN',
+   NF_NULL_TYPE_ETH()    => 'ETH',
+};
+
 sub encapsulate {
    my $self = shift;
 
    return $self->[$__nextLayer] if $self->[$__nextLayer];
 
-   my $types = {
-      NF_NULL_TYPE_IPv4()   => 'IPv4',
-      NF_NULL_TYPE_ARP()    => 'ARP',
-      NF_NULL_TYPE_CGMP()   => 'CGMP',
-      NF_NULL_TYPE_80211()  => '80211',
-      NF_NULL_TYPE_DDP()    => 'DDP',
-      NF_NULL_TYPE_AARP()   => 'AARP',
-      NF_NULL_TYPE_WCP()    => 'WCP',
-      NF_NULL_TYPE_8021Q()  => '8021Q',
-      NF_NULL_TYPE_IPX()    => 'IPX',
-      NF_NULL_TYPE_STP()    => 'STP',
-      NF_NULL_TYPE_IPv6()   => 'IPv6',
-      NF_NULL_TYPE_WLCCP()  => 'WLCCP',
-      NF_NULL_TYPE_PPPoED() => 'PPPoED',
-      NF_NULL_TYPE_PPPoES() => 'PPPoES',
-      NF_NULL_TYPE_8021X()  => '8021X',
-      NF_NULL_TYPE_AoE()    => 'AoE',
-      NF_NULL_TYPE_LLDP()   => 'LLDP',
-      NF_NULL_TYPE_LOOP()   => 'LOOP',
-      NF_NULL_TYPE_VLAN()   => 'VLAN',
-      NF_NULL_TYPE_ETH()    => 'ETH',
-   };
-
-   $types->{$self->[$__type]} || NF_LAYER_UNKNOWN;
+   return $Next->{$self->[$__type]} || NF_LAYER_UNKNOWN;
 }
 
 sub print {
@@ -146,7 +146,7 @@ Net::Frame::Layer::NULL - BSD loopback layer object
 
    use Net::Frame::Layer::NULL qw(:consts);
 
-   # Build a layer
+   # Build a layer
    my $layer = Net::Frame::Layer::NULL->new(
       type => NF_NULL_TYPE_IPv4,
    );
@@ -287,7 +287,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

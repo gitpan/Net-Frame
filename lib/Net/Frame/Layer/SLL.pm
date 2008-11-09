@@ -1,5 +1,5 @@
 #
-# $Id: SLL.pm,v 1.13 2007/01/03 21:43:04 gomor Exp $
+# $Id: SLL.pm 301 2008-11-09 21:52:06Z gomor $
 #
 package Net::Frame::Layer::SLL;
 use strict;
@@ -31,6 +31,7 @@ our %EXPORT_TAGS = (
       NF_SLL_PROTOCOL_STP
       NF_SLL_PROTOCOL_IPv6
       NF_SLL_PROTOCOL_WLCCP
+      NF_SLL_PROTOCOL_MPLS
       NF_SLL_PROTOCOL_PPPoED
       NF_SLL_PROTOCOL_PPPoES
       NF_SLL_PROTOCOL_8021X
@@ -68,6 +69,7 @@ use constant NF_SLL_PROTOCOL_IPX       => 0x8137;
 use constant NF_SLL_PROTOCOL_STP       => 0x8181;
 use constant NF_SLL_PROTOCOL_IPv6      => 0x86dd;
 use constant NF_SLL_PROTOCOL_WLCCP     => 0x872d;
+use constant NF_SLL_PROTOCOL_MPLS      => 0x8847;
 use constant NF_SLL_PROTOCOL_PPPoED    => 0x8863;
 use constant NF_SLL_PROTOCOL_PPPoES    => 0x8864;
 use constant NF_SLL_PROTOCOL_8021X     => 0x888e;
@@ -136,42 +138,43 @@ sub unpack {
    $self;
 }
 
+our $Next = {
+   NF_SLL_PROTOCOL_IPv4()    => 'IPv4',
+   NF_SLL_PROTOCOL_X25()     => 'X25',
+   NF_SLL_PROTOCOL_ARP()     => 'ARP',
+   NF_SLL_PROTOCOL_CGMP()    => 'CGMP',
+   NF_SLL_PROTOCOL_80211()   => '80211',
+   NF_SLL_PROTOCOL_PPPIPCP() => 'PPPIPCP',
+   NF_SLL_PROTOCOL_RARP()    => 'RARP',
+   NF_SLL_PROTOCOL_DDP ()    => 'DDP',
+   NF_SLL_PROTOCOL_AARP()    => 'AARP',
+   NF_SLL_PROTOCOL_PPPCCP()  => 'PPPCCP',
+   NF_SLL_PROTOCOL_WCP()     => 'WCP',
+   NF_SLL_PROTOCOL_8021Q()   => '8021Q',
+   NF_SLL_PROTOCOL_IPX()     => 'IPX',
+   NF_SLL_PROTOCOL_STP()     => 'STP',
+   NF_SLL_PROTOCOL_IPv6()    => 'IPv6',
+   NF_SLL_PROTOCOL_WLCCP()   => 'WLCCP',
+   NF_SLL_PROTOCOL_MPLS()    => 'MPLS',
+   NF_SLL_PROTOCOL_PPPoED()  => 'PPPoED',
+   NF_SLL_PROTOCOL_PPPoES()  => 'PPPoES',
+   NF_SLL_PROTOCOL_8021X()   => '8021X',
+   NF_SLL_PROTOCOL_AoE()     => 'AoE',
+   NF_SLL_PROTOCOL_80211I()  => '80211I',
+   NF_SLL_PROTOCOL_LLDP()    => 'LLDP',
+   NF_SLL_PROTOCOL_LLTD()    => 'LLTD',
+   NF_SLL_PROTOCOL_LOOP()    => 'LOOP',
+   NF_SLL_PROTOCOL_VLAN()    => 'VLAN',
+   NF_SLL_PROTOCOL_PPPPAP()  => 'PPPPAP',
+   NF_SLL_PROTOCOL_PPPCHAP() => 'PPPCHAP',
+};
+
 sub encapsulate {
    my $self = shift;
 
    return $self->[$__nextLayer] if $self->[$__nextLayer];
 
-   my $types = {
-      NF_SLL_PROTOCOL_IPv4()    => 'IPv4',
-      NF_SLL_PROTOCOL_X25()     => 'X25',
-      NF_SLL_PROTOCOL_ARP()     => 'ARP',
-      NF_SLL_PROTOCOL_CGMP()    => 'CGMP',
-      NF_SLL_PROTOCOL_80211()   => '80211',
-      NF_SLL_PROTOCOL_PPPIPCP() => 'PPPIPCP',
-      NF_SLL_PROTOCOL_RARP()    => 'RARP',
-      NF_SLL_PROTOCOL_DDP ()    => 'DDP',
-      NF_SLL_PROTOCOL_AARP()    => 'AARP',
-      NF_SLL_PROTOCOL_PPPCCP()  => 'PPPCCP',
-      NF_SLL_PROTOCOL_WCP()     => 'WCP',
-      NF_SLL_PROTOCOL_8021Q()   => '8021Q',
-      NF_SLL_PROTOCOL_IPX()     => 'IPX',
-      NF_SLL_PROTOCOL_STP()     => 'STP',
-      NF_SLL_PROTOCOL_IPv6()    => 'IPv6',
-      NF_SLL_PROTOCOL_WLCCP()   => 'WLCCP',
-      NF_SLL_PROTOCOL_PPPoED()  => 'PPPoED',
-      NF_SLL_PROTOCOL_PPPoES()  => 'PPPoES',
-      NF_SLL_PROTOCOL_8021X()   => '8021X',
-      NF_SLL_PROTOCOL_AoE()     => 'AoE',
-      NF_SLL_PROTOCOL_80211I()  => '80211I',
-      NF_SLL_PROTOCOL_LLDP()    => 'LLDP',
-      NF_SLL_PROTOCOL_LLTD()    => 'LLTD',
-      NF_SLL_PROTOCOL_LOOP()    => 'LOOP',
-      NF_SLL_PROTOCOL_VLAN()    => 'VLAN',
-      NF_SLL_PROTOCOL_PPPPAP()  => 'PPPPAP',
-      NF_SLL_PROTOCOL_PPPCHAP() => 'PPPCHAP',
-   };
-
-   $types->{$self->[$__protocol]} || NF_LAYER_UNKNOWN;
+   return $Next->{$self->[$__protocol]} || NF_LAYER_UNKNOWN;
 }
 
 sub print {
@@ -197,7 +200,7 @@ Net::Frame::Layer::SLL - Linux cooked capture layer object
 
    use Net::Frame::Layer::SLL qw(:consts);
 
-   # Build a layer
+   # Build a layer
    my $layer = Net::Frame::Layer::SLL->new(
       packetType    => NF_SLL_PACKET_TYPE_SENT_BY_US,
       addressType   => NF_SLL_ADDRESS_TYPE_512,
@@ -342,6 +345,8 @@ Various possible packet types.
 
 =item B<NF_SLL_PROTOCOL_WLCCP>
 
+=item B<NF_SLL_PROTOCOL_MPLS>
+
 =item B<NF_SLL_PROTOCOL_PPPoED>
 
 =item B<NF_SLL_PROTOCOL_PPPoES>
@@ -380,7 +385,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

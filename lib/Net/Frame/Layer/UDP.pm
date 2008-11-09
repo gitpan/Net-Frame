@@ -1,5 +1,5 @@
 #
-# $Id: UDP.pm,v 1.11 2007/01/03 21:43:33 gomor Exp $
+# $Id: UDP.pm 301 2008-11-09 21:52:06Z gomor $
 #
 package Net::Frame::Layer::UDP;
 use strict;
@@ -63,6 +63,11 @@ sub pack {
 sub unpack {
    my $self = shift;
 
+   # Pad it if less than the required length
+   if (length($self->[$__raw]) < NF_UDP_HDR_LEN) {
+      $self->[$__raw] .= ("\x00" x (NF_UDP_HDR_LEN - length($self->[$__raw])));
+   }
+
    my ($src, $dst, $len, $checksum, $payload) =
       $self->SUPER::unpack('nnnn a*', $self->[$__raw])
          or return undef;
@@ -117,7 +122,17 @@ sub computeChecksums {
    1;
 }
 
-sub encapsulate { shift->[$__nextLayer] }
+our $Next = {
+   67   => 'DHCP',
+   68   => 'DHCP',
+   520  => 'RIPv1',
+   1985 => 'HSRP',
+};
+
+sub encapsulate {
+   my $self = shift;
+   return $Next->{$self->[$__dst]} || $Next->{$self->[$__src]} || $self->[$__nextLayer];
+}
 
 sub getKey {
    my $self = shift;
@@ -285,7 +300,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

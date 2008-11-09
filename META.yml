@@ -1,9 +1,11 @@
 --- #YAML:1.0
 name:                Net-Frame
-version:             1.04
+version:             1.05
 abstract:            the base framework for frame crafting
-license:             Artistic
-generated_by:        ExtUtils::MakeMaker version 6.31
+license:             artistic
+author:              
+    - GomoR <perl@gomor.org>
+generated_by:        ExtUtils::MakeMaker version 6.44
 distribution_type:   module
 requires:     
     Bit::Vector:                   0
@@ -11,7 +13,5 @@ requires:
     Net::IPv6Addr:                 0
     Socket6:                       0
 meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.2.html
-    version: 1.2
-author:
-    - GomoR <perl@gomor.org>
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3

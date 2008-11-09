@@ -1,5 +1,5 @@
 #
-# $Id: IPv4.pm,v 1.13 2007/01/03 21:43:33 gomor Exp $
+# $Id: IPv4.pm 301 2008-11-09 21:52:06Z gomor $
 #
 package Net::Frame::Layer::IPv4;
 use strict;
@@ -254,41 +254,41 @@ sub computeChecksums {
    1;
 }
 
+our $Next = {
+   NF_IPv4_PROTOCOL_ICMPv4()       => 'ICMPv4',
+   NF_IPv4_PROTOCOL_IGMPv4()       => 'IGMPv4',
+   NF_IPv4_PROTOCOL_IPIP()         => 'IPIP',
+   NF_IPv4_PROTOCOL_TCP()          => 'TCP',
+   NF_IPv4_PROTOCOL_EGP()          => 'EGP',
+   NF_IPv4_PROTOCOL_IGRP()         => 'IGRP',
+   NF_IPv4_PROTOCOL_CHAOS()        => 'CHAOS',
+   NF_IPv4_PROTOCOL_UDP()          => 'UDP',
+   NF_IPv4_PROTOCOL_IDP()          => 'IDP',
+   NF_IPv4_PROTOCOL_DCCP()         => 'DCCP',
+   NF_IPv4_PROTOCOL_IPv6()         => 'IPv6',
+   NF_IPv4_PROTOCOL_IPv6ROUTING()  => 'IPv6Routing',
+   NF_IPv4_PROTOCOL_IPv6FRAGMENT() => 'IPv6Fragment',
+   NF_IPv4_PROTOCOL_IDRP()         => 'IDRP',
+   NF_IPv4_PROTOCOL_RSVP()         => 'RSVP',
+   NF_IPv4_PROTOCOL_GRE()          => 'GRE',
+   NF_IPv4_PROTOCOL_ESP()          => 'ESP',
+   NF_IPv4_PROTOCOL_AH()           => 'AH',
+   NF_IPv4_PROTOCOL_ICMPv6()       => 'ICMPv6',
+   NF_IPv4_PROTOCOL_EIGRP()        => 'EIGRP',
+   NF_IPv4_PROTOCOL_OSPF()         => 'OSPF',
+   NF_IPv4_PROTOCOL_ETHERIP()      => 'ETHERIP',
+   NF_IPv4_PROTOCOL_PIM()          => 'PIM',
+   NF_IPv4_PROTOCOL_VRRP()         => 'VRRP',
+   NF_IPv4_PROTOCOL_STP()          => 'STP',
+   NF_IPv4_PROTOCOL_SCTP()         => 'SCTP',
+};
+
 sub encapsulate {
    my $self = shift;
 
    return $self->[$__nextLayer] if $self->[$__nextLayer];
 
-   my $types = {
-      NF_IPv4_PROTOCOL_ICMPv4()       => 'ICMPv4',
-      NF_IPv4_PROTOCOL_IGMPv4()       => 'IGMPv4',
-      NF_IPv4_PROTOCOL_IPIP()         => 'IPIP',
-      NF_IPv4_PROTOCOL_TCP()          => 'TCP',
-      NF_IPv4_PROTOCOL_EGP()          => 'EGP',
-      NF_IPv4_PROTOCOL_IGRP()         => 'IGRP',
-      NF_IPv4_PROTOCOL_CHAOS()        => 'CHAOS',
-      NF_IPv4_PROTOCOL_UDP()          => 'UDP',
-      NF_IPv4_PROTOCOL_IDP()          => 'IDP',
-      NF_IPv4_PROTOCOL_DCCP()         => 'DCCP',
-      NF_IPv4_PROTOCOL_IPv6()         => 'IPv6',
-      NF_IPv4_PROTOCOL_IPv6ROUTING()  => 'IPv6Routing',
-      NF_IPv4_PROTOCOL_IPv6FRAGMENT() => 'IPv6Fragment',
-      NF_IPv4_PROTOCOL_IDRP()         => 'IDRP',
-      NF_IPv4_PROTOCOL_RSVP()         => 'RSVP',
-      NF_IPv4_PROTOCOL_GRE()          => 'GRE',
-      NF_IPv4_PROTOCOL_ESP()          => 'ESP',
-      NF_IPv4_PROTOCOL_AH()           => 'AH',
-      NF_IPv4_PROTOCOL_ICMPv6()       => 'ICMPv6',
-      NF_IPv4_PROTOCOL_EIGRP()        => 'EIGRP',
-      NF_IPv4_PROTOCOL_OSPF()         => 'OSPF',
-      NF_IPv4_PROTOCOL_ETHERIP()      => 'ETHERIP',
-      NF_IPv4_PROTOCOL_PIM()          => 'PIM',
-      NF_IPv4_PROTOCOL_VRRP()         => 'VRRP',
-      NF_IPv4_PROTOCOL_STP()          => 'STP',
-      NF_IPv4_PROTOCOL_SCTP()         => 'SCTP',
-   };
-
-   $types->{$self->[$__protocol]} || NF_LAYER_UNKNOWN;
+   return $Next->{$self->[$__protocol]} || NF_LAYER_UNKNOWN;
 }
 
 sub print {
@@ -325,7 +325,7 @@ Net::Frame::Layer::IPv4 - Internet Protocol v4 layer object
 
    use Net::Frame::Layer::IPv4 qw(:consts);
 
-   # Build a layer
+   # Build a layer
    my $layer = Net::Frame::Layer::IPv4->new(
       version  => 4,
       tos      => 0,
@@ -567,7 +567,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
       
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

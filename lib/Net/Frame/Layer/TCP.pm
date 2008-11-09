@@ -1,5 +1,5 @@
 #
-# $Id: TCP.pm,v 1.11 2007/03/26 21:20:21 gomor Exp $
+# $Id: TCP.pm 301 2008-11-09 21:52:06Z gomor $
 #
 package Net::Frame::Layer::TCP;
 use strict;
@@ -106,6 +106,11 @@ sub pack {
 sub unpack {
    my $self = shift;
 
+   # Pad it if less than the required length
+   if (length($self->[$__raw]) < NF_TCP_HDR_LEN) {
+      $self->[$__raw] .= ("\x00" x (NF_TCP_HDR_LEN - length($self->[$__raw])));
+   }
+
    my ($src, $dst, $seq, $ack, $offX2Flags, $win, $checksum, $urp, $payload) =
       $self->SUPER::unpack('nnNNnnnn a*', $self->[$__raw])
          or return undef;
@@ -193,7 +198,13 @@ sub computeChecksums {
    1;
 }
 
-sub encapsulate { shift->[$__nextLayer] }
+our $Next = {
+};
+
+sub encapsulate {
+   my $self = shift;
+   return $Next->{$self->[$__dst]} || $Next->{$self->[$__src]} || $self->[$__nextLayer];
+}
 
 sub match {
    my $self = shift;
@@ -246,7 +257,7 @@ Net::Frame::Layer::TCP - Transmission Control Protocol layer object
 
    use Net::Frame::Layer::TCP qw(:consts);
 
-   # Build a layer
+   # Build a layer
    my $layer = Net::Frame::Layer::TCP->new(
       src      => getRandomHighPort(),
       dst      => 0,
@@ -437,7 +448,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

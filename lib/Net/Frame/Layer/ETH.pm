@@ -1,5 +1,5 @@
 #
-# $Id: ETH.pm,v 1.13 2007/03/26 21:20:38 gomor Exp $
+# $Id: ETH.pm 301 2008-11-09 21:52:06Z gomor $
 #
 package Net::Frame::Layer::ETH;
 use strict;
@@ -29,6 +29,7 @@ our %EXPORT_TAGS = (
       NF_ETH_TYPE_STP
       NF_ETH_TYPE_IPv6
       NF_ETH_TYPE_WLCCP
+      NF_ETH_TYPE_MPLS
       NF_ETH_TYPE_PPPoED
       NF_ETH_TYPE_PPPoES
       NF_ETH_TYPE_8021X
@@ -64,6 +65,7 @@ use constant NF_ETH_TYPE_IPX       => 0x8137;
 use constant NF_ETH_TYPE_STP       => 0x8181;
 use constant NF_ETH_TYPE_IPv6      => 0x86dd;
 use constant NF_ETH_TYPE_WLCCP     => 0x872d;
+use constant NF_ETH_TYPE_MPLS      => 0x8847;
 use constant NF_ETH_TYPE_PPPoED    => 0x8863;
 use constant NF_ETH_TYPE_PPPoES    => 0x8864;
 use constant NF_ETH_TYPE_8021X     => 0x888e;
@@ -134,40 +136,58 @@ sub unpack {
    $self;
 }
 
+sub computeLengths {
+   my $self = shift;
+   my ($layers) = @_;
+   if ($self->[$__type] <= 1500) {
+      my $len = 0;
+      for my $l (@$layers) {
+         next if $l->layer eq 'ETH';
+         # We do not use getLength(), because the layer may 
+         # have a fake length, due to fuzzing or stress
+         # testing attempts from the user
+         $len += CORE::length($l->pack),
+      }
+      $self->type($len);
+   }
+   return 1;
+}
+
+our $Next = {
+   NF_ETH_TYPE_IPv4()    => 'IPv4',
+   NF_ETH_TYPE_X25()     => 'X25',
+   NF_ETH_TYPE_ARP()     => 'ARP',
+   NF_ETH_TYPE_CGMP()    => 'CGMP',
+   NF_ETH_TYPE_80211()   => '80211',
+   NF_ETH_TYPE_PPPIPCP() => 'PPPIPCP',
+   NF_ETH_TYPE_RARP()    => 'RARP',
+   NF_ETH_TYPE_DDP ()    => 'DDP',
+   NF_ETH_TYPE_AARP()    => 'AARP',
+   NF_ETH_TYPE_PPPCCP()  => 'PPPCCP',
+   NF_ETH_TYPE_WCP()     => 'WCP',
+   NF_ETH_TYPE_8021Q()   => '8021Q',
+   NF_ETH_TYPE_IPX()     => 'IPX',
+   NF_ETH_TYPE_STP()     => 'STP',
+   NF_ETH_TYPE_IPv6()    => 'IPv6',
+   NF_ETH_TYPE_WLCCP()   => 'WLCCP',
+   NF_ETH_TYPE_MPLS()    => 'MPLS',
+   NF_ETH_TYPE_PPPoED()  => 'PPPoED',
+   NF_ETH_TYPE_PPPoES()  => 'PPPoES',
+   NF_ETH_TYPE_8021X()   => '8021X',
+   NF_ETH_TYPE_AoE()     => 'AoE',
+   NF_ETH_TYPE_80211I()  => '80211I',
+   NF_ETH_TYPE_LLDP()    => 'LLDP',
+   NF_ETH_TYPE_LLTD()    => 'LLTD',
+   NF_ETH_TYPE_LOOP()    => 'LOOP',
+   NF_ETH_TYPE_VLAN()    => 'VLAN',
+   NF_ETH_TYPE_PPPPAP()  => 'PPPPAP',
+   NF_ETH_TYPE_PPPCHAP() => 'PPPCHAP',
+};
+
 sub encapsulate {
    my $self = shift;
 
    return $self->[$__nextLayer] if $self->[$__nextLayer];
-
-   my $types = {
-      NF_ETH_TYPE_IPv4()    => 'IPv4',
-      NF_ETH_TYPE_X25()     => 'X25',
-      NF_ETH_TYPE_ARP()     => 'ARP',
-      NF_ETH_TYPE_CGMP()    => 'CGMP',
-      NF_ETH_TYPE_80211()   => '80211',
-      NF_ETH_TYPE_PPPIPCP() => 'PPPIPCP',
-      NF_ETH_TYPE_RARP()    => 'RARP',
-      NF_ETH_TYPE_DDP ()    => 'DDP',
-      NF_ETH_TYPE_AARP()    => 'AARP',
-      NF_ETH_TYPE_PPPCCP()  => 'PPPCCP',
-      NF_ETH_TYPE_WCP()     => 'WCP',
-      NF_ETH_TYPE_8021Q()   => '8021Q',
-      NF_ETH_TYPE_IPX()     => 'IPX',
-      NF_ETH_TYPE_STP()     => 'STP',
-      NF_ETH_TYPE_IPv6()    => 'IPv6',
-      NF_ETH_TYPE_WLCCP()   => 'WLCCP',
-      NF_ETH_TYPE_PPPoED()  => 'PPPoED',
-      NF_ETH_TYPE_PPPoES()  => 'PPPoES',
-      NF_ETH_TYPE_8021X()   => '8021X',
-      NF_ETH_TYPE_AoE()     => 'AoE',
-      NF_ETH_TYPE_80211I()  => '80211I',
-      NF_ETH_TYPE_LLDP()    => 'LLDP',
-      NF_ETH_TYPE_LLTD()    => 'LLTD',
-      NF_ETH_TYPE_LOOP()    => 'LOOP',
-      NF_ETH_TYPE_VLAN()    => 'VLAN',
-      NF_ETH_TYPE_PPPPAP()  => 'PPPPAP',
-      NF_ETH_TYPE_PPPCHAP() => 'PPPCHAP',
-   };
 
    # Is this a 802.3 layer ?
    if ($self->[$__type] <= 1500 && $self->[$__payload]) {
@@ -179,7 +199,7 @@ sub encapsulate {
       return NF_LAYER_UNKNOWN;
    }
 
-   $types->{$self->[$__type]} || NF_LAYER_UNKNOWN;
+   $Next->{$self->[$__type]} || NF_LAYER_UNKNOWN;
 }
 
 sub print {
@@ -210,7 +230,7 @@ Net::Frame::Layer::ETH - Ethernet/802.3 layer object
 
    use Net::Frame::Layer::ETH qw(:consts);
 
-   # Build a layer
+   # Build a layer
    my $layer = Net::Frame::Layer::ETH->new(
       src  => '00:00:00:00:00:00',
       dst  => NF_ETH_ADDR_BROADCAST,
@@ -347,6 +367,8 @@ Ethernet broadcast address.
 
 =item B<NF_ETH_TYPE_WLCCP>
 
+=item B<NF_ETH_TYPE_MPLS>
+
 =item B<NF_ETH_TYPE_PPPoED>
 
 =item B<NF_ETH_TYPE_PPPoES>
@@ -383,7 +405,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

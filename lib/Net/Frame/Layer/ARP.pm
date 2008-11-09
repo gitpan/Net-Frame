@@ -1,5 +1,5 @@
 #
-# $Id: ARP.pm,v 1.9 2007/01/03 21:41:47 gomor Exp $
+# $Id: ARP.pm 301 2008-11-09 21:52:06Z gomor $
 #
 package Net::Frame::Layer::ARP;
 use strict;
@@ -169,7 +169,10 @@ sub match {
    && ($with->[$__dstIp]  eq $self->[$__srcIp]);
 }
 
-sub encapsulate { $self->[$__nextLayer] }
+sub encapsulate {
+   my $self = shift;
+   return $self->[$__nextLayer];
+}
 
 sub print {
    my $self = shift;
@@ -197,7 +200,7 @@ Net::Frame::Layer::ARP - Address Resolution Protocol layer object
 
    use Net::Frame::Layer::ARP qw(:consts);
 
-   # Build a layer
+   # Build a layer
    my $layer = Net::Frame::Layer::ARP->new(
       hType   => NF_ARP_HTYPE_ETH,
       pType   => NF_ARP_PTYPE_IPv4,
@@ -370,7 +373,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

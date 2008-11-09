@@ -1,5 +1,5 @@
 #
-# $Id: PPP.pm,v 1.11 2007/01/03 21:43:33 gomor Exp $
+# $Id: PPP.pm 301 2008-11-09 21:52:06Z gomor $
 #
 package Net::Frame::Layer::PPP;
 use strict;
@@ -78,21 +78,21 @@ sub unpack {
    $self;
 }
 
+our $Next = {
+   NF_PPP_PROTOCOL_IPv4()   => 'IPv4',
+   NF_PPP_PROTOCOL_DDP()    => 'DDP',
+   NF_PPP_PROTOCOL_IPX()    => 'IPX',
+   NF_PPP_PROTOCOL_IPv6()   => 'IPv6',
+   NF_PPP_PROTOCOL_CDP()    => 'CDP',
+   NF_PPP_PROTOCOL_PPPLCP() => 'PPPLCP',
+};
+
 sub encapsulate {
    my $self = shift;
 
    return $self->[$__nextLayer] if $self->[$__nextLayer];
 
-   my $types = {
-      NF_PPP_PROTOCOL_IPv4()   => 'IPv4',
-      NF_PPP_PROTOCOL_DDP()    => 'DDP',
-      NF_PPP_PROTOCOL_IPX()    => 'IPX',
-      NF_PPP_PROTOCOL_IPv6()   => 'IPv6',
-      NF_PPP_PROTOCOL_CDP()    => 'CDP',
-      NF_PPP_PROTOCOL_PPPLCP() => 'PPPLCP',
-   };
-
-   $types->{$self->[$__protocol]} || NF_LAYER_UNKNOWN;
+   return $Next->{$self->[$__protocol]} || NF_LAYER_UNKNOWN;
 }
 
 sub print {
@@ -232,7 +232,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2007, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

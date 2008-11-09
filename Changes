@@ -1,5 +1,13 @@
 Revision history for Perl extension Net::Frame.
 
+1.05 Sun Nov  9 22:51:39 CET 2008
+   - new: computeLengths() in ETH, to use 802.3 easily
+   - new: $Next global variable in each module to allow customized encapsulation()
+          => mainly used to encapsulate application layer procotols
+   - new: UDP now have some $Next values (DHCP, RIPv1, HSRP)
+   - new: added link to a MPLS layer from ETH and SLL layers
+   - bugfix: pad TCP and UDP raw data if less than required length
+
 1.04 Mon Mar 26 23:19:44 CEST 2007
    - bugfix: TCP: computeLengths() with options
    - update: ETH: more checks for next layer decoding (LLC)
