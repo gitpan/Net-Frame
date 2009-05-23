@@ -1,5 +1,5 @@
 #
-# $Id: SLL.pm 301 2008-11-09 21:52:06Z gomor $
+# $Id: SLL.pm 305 2009-05-23 13:21:05Z gomor $
 #
 package Net::Frame::Layer::SLL;
 use strict;
@@ -385,7 +385,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2009, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

@@ -1,5 +1,5 @@
 #
-# $Id: IPv4.pm 301 2008-11-09 21:52:06Z gomor $
+# $Id: IPv4.pm 305 2009-05-23 13:21:05Z gomor $
 #
 package Net::Frame::Layer::IPv4;
 use strict;
@@ -38,6 +38,7 @@ our %EXPORT_TAGS = (
       NF_IPv4_PROTOCOL_VRRP
       NF_IPv4_PROTOCOL_STP
       NF_IPv4_PROTOCOL_SCTP
+      NF_IPv4_PROTOCOL_UDPLITE
       NF_IPv4_MORE_FRAGMENT
       NF_IPv4_DONT_FRAGMENT
       NF_IPv4_RESERVED_FRAGMENT
@@ -74,6 +75,7 @@ use constant NF_IPv4_PROTOCOL_PIM          => 0x67;
 use constant NF_IPv4_PROTOCOL_VRRP         => 0x70;
 use constant NF_IPv4_PROTOCOL_STP          => 0x76;
 use constant NF_IPv4_PROTOCOL_SCTP         => 0x84;
+use constant NF_IPv4_PROTOCOL_UDPLITE      => 0x88;
 use constant NF_IPv4_MORE_FRAGMENT     => 1;
 use constant NF_IPv4_DONT_FRAGMENT     => 2;
 use constant NF_IPv4_RESERVED_FRAGMENT => 4;
@@ -229,20 +231,35 @@ sub getOptionsLength {
 
 sub computeLengths {
    my $self = shift;
-   my ($h)  = @_;
+   my ($layers) = @_;
 
    my $hLen = NF_IPv4_HDR_LEN;
    $hLen   += length($self->[$__options]) if $self->[$__options];
    $self->[$__hlen] = $hLen / 4;
 
-   my $length = $self->getLength + $h->{payloadLength};
-   $self->[$__length] = $length;
+   my $len = $hLen;
+   my $last;
+   my $start;
+   for my $l (@$layers) {
+      if (! $start) {
+         $start++ if $l->layer eq 'IPv4';
+         next;
+      }
+      $len += $l->getLength;
+      $last = $l;
+   }
+   if (defined($last->payload)) {
+      $len += length($last->payload);
+   }
 
-   1;
+   $self->length($len);
+
+   return 1;
 }
 
 sub computeChecksums {
    my $self = shift;
+   my ($layers) = @_;
 
    # Reset the checksum if already filled by a previous pack
    if ($self->[$__checksum]) {
@@ -251,7 +268,7 @@ sub computeChecksums {
 
    $self->[$__checksum] = inetChecksum($self->pack);
 
-   1;
+   return 1;
 }
 
 our $Next = {
@@ -281,6 +298,7 @@ our $Next = {
    NF_IPv4_PROTOCOL_VRRP()         => 'VRRP',
    NF_IPv4_PROTOCOL_STP()          => 'STP',
    NF_IPv4_PROTOCOL_SCTP()         => 'SCTP',
+   NF_IPv4_PROTOCOL_UDPLITE()      => 'UDPLite',
 };
 
 sub encapsulate {
@@ -545,6 +563,8 @@ Load them: use Net::Frame::Layer::IPv4 qw(:consts);
 
 =item B<NF_IPv4_PROTOCOL_SCTP>
 
+=item B<NF_IPv4_PROTOCOL_UDPLITE>
+
 Various protocol type constants.
 
 =item B<NF_IPv4_MORE_FRAGMENT>
@@ -567,7 +587,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2009, Patrice E<lt>GomoRE<gt> Auffret
       
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

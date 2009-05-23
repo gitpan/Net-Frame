@@ -1,12 +1,11 @@
 #
-# $Id: TCP.pm 301 2008-11-09 21:52:06Z gomor $
+# $Id: TCP.pm 305 2009-05-23 13:21:05Z gomor $
 #
 package Net::Frame::Layer::TCP;
-use strict;
-use warnings;
+use strict; use warnings;
 
 use Net::Frame::Layer qw(:consts :subs);
-require Exporter;
+use Exporter;
 our @ISA = qw(Net::Frame::Layer Exporter);
 
 our %EXPORT_TAGS = (
@@ -86,21 +85,15 @@ sub pack {
       $self->[$__win],
       $self->[$__checksum],
       $self->[$__urp],
-   ) or return undef;
+   ) or return;
 
    if ($self->[$__options]) {
       $self->[$__raw] =
          $self->[$__raw].$self->SUPER::pack('a*', $self->[$__options])
-            or return undef;
+            or return;
    }
 
-   if ($self->[$__payload]) {
-      $self->[$__raw] =
-         $self->[$__raw].$self->SUPER::pack('a*', $self->[$__payload])
-            or return undef;
-   }
-
-   $self->[$__raw];
+   return $self->[$__raw];
 }
 
 sub unpack {
@@ -113,7 +106,7 @@ sub unpack {
 
    my ($src, $dst, $seq, $ack, $offX2Flags, $win, $checksum, $urp, $payload) =
       $self->SUPER::unpack('nnNNnnnn a*', $self->[$__raw])
-         or return undef;
+         or return;
 
    $self->[$__src]      = $src;
    $self->[$__dst]      = $dst;
@@ -129,12 +122,12 @@ sub unpack {
 
    my ($options, $payload2) = $self->SUPER::unpack(
       'a'. $self->getOptionsLength. 'a*', $self->[$__payload]
-   ) or return undef;
+   ) or return;
 
    $self->[$__options] = $options;
    $self->[$__payload] = $payload2;
 
-   $self;
+   return $self;
 }
 
 sub getLength { my $self = shift; $self->[$__off] ? $self->[$__off] * 4 : 0 }
@@ -159,20 +152,22 @@ sub computeLengths {
 
 sub computeChecksums {
    my $self = shift;
-   my ($h)  = @_;
+   my ($layers) = @_;
 
    my $payloadLength = $self->getLength + $self->getPayloadLength;
 
    my $phpkt;
-   if ($h->{type} eq 'IPv4') {
-      $phpkt = $self->SUPER::pack('a4a4CCn',
-         inetAton($h->{src}), inetAton($h->{dst}), 0, 6, $payloadLength,
-      );
-   }
-   elsif ($h->{type} eq 'IPv6') {
-      $phpkt = $self->SUPER::pack('a*a*NnCC',
-         inet6Aton($h->{src}), inet6Aton($h->{dst}), $payloadLength, 0, 0, 6,
-      );
+   for my $l (@$layers) {
+      if ($l->layer eq 'IPv4') {
+         $phpkt = $self->SUPER::pack('a4a4CCn',
+            inetAton($l->src), inetAton($l->dst), 0, 6, $payloadLength);
+         last;
+      }
+      elsif ($l->layer eq 'IPv6') {
+         $phpkt = $self->SUPER::pack('a*a*NnCC',
+            inet6Aton($l->src), inet6Aton($l->dst), $payloadLength, 0, 0, 6);
+         last;
+      }
    }
 
    my $offX2Flags = ($self->[$__off] << 12) | (0x0f00 & ($self->[$__x2] << 8))
@@ -181,21 +176,22 @@ sub computeChecksums {
    $phpkt .= $self->SUPER::pack('nnNNnnnn',
       $self->[$__src], $self->[$__dst], $self->[$__seq], $self->[$__ack],
       $offX2Flags, $self->[$__win], 0, $self->[$__urp],
-   ) or return undef;
+   ) or return;
 
    if ($self->[$__options]) {
       $phpkt .= $self->SUPER::pack('a*', $self->[$__options])
-         or return undef;
+         or return;
    }
 
-   if ($self->[$__payload]) {
-      $phpkt .= $self->SUPER::pack('a*', $self->[$__payload])
-         or return undef;
+   my $last = $layers->[-1];
+   if (defined($last->payload) && length($last->payload)) {
+      $phpkt .= $self->SUPER::pack('a*', $last->payload)
+         or return;
    }
 
    $self->[$__checksum] = inetChecksum($phpkt);
 
-   1;
+   return 1;
 }
 
 our $Next = {
@@ -203,7 +199,8 @@ our $Next = {
 
 sub encapsulate {
    my $self = shift;
-   return $Next->{$self->[$__dst]} || $Next->{$self->[$__src]} || $self->[$__nextLayer];
+   return $Next->{$self->[$__dst]} || $Next->{$self->[$__src]}
+                                   || $self->[$__nextLayer];
 }
 
 sub match {
@@ -448,7 +445,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2008, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2009, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

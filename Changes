@@ -1,5 +1,12 @@
 Revision history for Perl extension Net::Frame.
 
+1.06 Sat May 23 15:33:44 CEST 2009
+   - update: TCP computeChecksums()
+   - update: UDP computeChecksums()
+   - update: IPv4 added UDPLite support
+   - update: IPv4 computeLengths()
+   - update: copyright notice
+
 1.05 Sun Nov  9 22:51:39 CET 2008
    - new: computeLengths() in ETH, to use 802.3 easily
    - new: $Next global variable in each module to allow customized encapsulation()
