@@ -1,5 +1,5 @@
 #
-# $Id: Layer.pm 305 2009-05-23 13:21:05Z gomor $
+# $Id: Layer.pm 333 2011-02-16 10:47:33Z gomor $
 #
 package Net::Frame::Layer;
 use strict;
@@ -130,7 +130,7 @@ sub getHostIpv6Addr {
    return undef unless $name;
    return $name if Net::IPv6Addr::is_ipv6($name);
 
-   my @res = getaddrinfo($name, 'ssh', AF_INET6, SOCK_STREAM);
+   my @res = getaddrinfo($name, 'ssh', Socket6::AF_INET6(), SOCK_STREAM);
    if (@res >= 5) {
       my ($ipv6) = getnameinfo($res[3], NI_NUMERICHOST | NI_NUMERICSERV);
       $ipv6 =~ s/%.*$//;
@@ -142,10 +142,10 @@ sub getHostIpv6Addr {
    undef;
 }
 
-sub inetAton  { inet_aton(shift())           }
-sub inetNtoa  { inet_ntoa(shift())           }
-sub inet6Aton { inet_pton(AF_INET6, shift()) }
-sub inet6Ntoa { inet_ntop(AF_INET6, shift()) }
+sub inetAton  { inet_aton(shift())                    }
+sub inetNtoa  { inet_ntoa(shift())                    }
+sub inet6Aton { inet_pton(Socket6::AF_INET6(), shift()) }
+sub inet6Ntoa { inet_ntop(Socket6::AF_INET6(), shift()) }
 
 sub getRandomHighPort {
    my $highPort = int rand 0xffff;
@@ -333,7 +333,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2009, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2011, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

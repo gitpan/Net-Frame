@@ -1,5 +1,5 @@
 #
-# $Id: ARP.pm 305 2009-05-23 13:21:05Z gomor $
+# $Id: ARP.pm 333 2011-02-16 10:47:33Z gomor $
 #
 package Net::Frame::Layer::ARP;
 use strict;
@@ -71,14 +71,14 @@ sub new {
    $self->[$__src] = lc($self->[$__src]) if $self->[$__src];
    $self->[$__dst] = lc($self->[$__dst]) if $self->[$__dst];
 
-   $self;
+   return $self;
 }
 
 sub getLength {
    my $self = shift;
    my $len = NF_ARP_HDR_LEN;
    $len += 24 if $self->[$__pType] == NF_ARP_PTYPE_IPv6;
-   $len;
+   return $len;
 }
 
 sub pack {
@@ -89,7 +89,7 @@ sub pack {
 
    # IPv4 packing
    if ($self->[$__pType] == NF_ARP_PTYPE_IPv4) {
-      $self->[$__raw] = $self->SUPER::pack('nnUUnH12a4H12a4',
+      $self->[$__raw] = $self->SUPER::pack('nnCCnH12a4H12a4',
          $self->[$__hType],
          $self->[$__pType],
          $self->[$__hSize],
@@ -99,11 +99,11 @@ sub pack {
          inetAton($self->[$__srcIp]),
          $dstMac,
          inetAton($self->[$__dstIp]),
-      ) or return undef;
+      ) or return;
    }
    # IPv6 packing
    else {
-      $self->[$__raw] = $self->SUPER::pack('nnUUnH12a*H12a*',
+      $self->[$__raw] = $self->SUPER::pack('nnCCnH12a*H12a*',
          $self->[$__hType],
          $self->[$__pType],
          $self->[$__hSize],
@@ -113,32 +113,35 @@ sub pack {
          inet6Aton($self->[$__srcIp]),
          $dstMac,
          inet6Aton($self->[$__dstIp]),
-      ) or return undef;
+      ) or return;
    }
 
-   $self->[$__raw];
+   return $self->[$__raw];
 }
 
 sub unpack {
    my $self = shift;
 
-   my ($hType, $pType, $tail) = $self->SUPER::unpack('nn a*', $self->[$__raw])
-      or return undef;
+   my ($hType, $pType, $tail) = $self->SUPER::unpack('nn a*',
+      $self->[$__raw])
+         or return;
 
-   my ($hSize, $pSize, $opCode, $srcMac, $srcIp, $dstMac, $dstIp, $payload);
+   my ($hSize, $pSize, $opCode, $srcMac, $srcIp, $dstMac, $dstIp,
+       $payload);
+
    # IPv4 unpacking
    if ($pType == NF_ARP_PTYPE_IPv4) {
-      ($hSize, $pSize, $opCode, $srcMac, $srcIp, $dstMac, $dstIp, $payload) =
-         $self->SUPER::unpack('UUnH12a4H12a4 a*', $tail)
-            or return undef;
+      ($hSize, $pSize, $opCode, $srcMac, $srcIp, $dstMac, $dstIp,
+       $payload) = $self->SUPER::unpack('CCnH12a4H12a4 a*', $tail)
+         or return;
       $self->[$__srcIp] = inetNtoa($srcIp);
       $self->[$__dstIp] = inetNtoa($dstIp);
    }
    # IPv6 unpacking
    else {
-      ($hSize, $pSize, $opCode, $srcMac, $srcIp, $dstMac, $dstIp, $payload) =
-         $self->SUPER::unpack('UUnH12a16H12a16 a*', $tail)
-            or return undef;
+      ($hSize, $pSize, $opCode, $srcMac, $srcIp, $dstMac, $dstIp,
+       $payload) = $self->SUPER::unpack('CCnH12a16H12a16 a*', $tail)
+         or return;
       $self->[$__srcIp] = inet6Ntoa($srcIp);
       $self->[$__dstIp] = inet6Ntoa($dstIp);
    }
@@ -153,7 +156,7 @@ sub unpack {
 
    $self->[$__payload] = $payload;
 
-   $self;
+   return $self;
 }
 
 sub getKey        { shift->layer }
@@ -373,7 +376,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2009, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2011, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

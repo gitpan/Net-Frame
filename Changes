@@ -1,5 +1,11 @@
 Revision history for Perl extension Net::Frame.
 
+1.07 Sun Feb 20 17:49:11 CET 2011
+   - bugfix: in ARP pack/unpack
+   - bugfix: AF_INET6 constant badly used
+   - UPDATE: IGMPv4 renamed to IGMP
+   - update: copyright notice
+
 1.06 Sat May 23 15:33:44 CEST 2009
    - update: TCP computeChecksums()
    - update: UDP computeChecksums()

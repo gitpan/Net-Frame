@@ -1,5 +1,5 @@
 #
-# $Id: IPv4.pm 305 2009-05-23 13:21:05Z gomor $
+# $Id: IPv4.pm 333 2011-02-16 10:47:33Z gomor $
 #
 package Net::Frame::Layer::IPv4;
 use strict;
@@ -13,7 +13,7 @@ our %EXPORT_TAGS = (
    consts => [qw(
       NF_IPv4_HDR_LEN
       NF_IPv4_PROTOCOL_ICMPv4
-      NF_IPv4_PROTOCOL_IGMPv4
+      NF_IPv4_PROTOCOL_IGMP
       NF_IPv4_PROTOCOL_IPIP
       NF_IPv4_PROTOCOL_TCP
       NF_IPv4_PROTOCOL_EGP
@@ -50,7 +50,7 @@ our @EXPORT_OK = (
 
 use constant NF_IPv4_HDR_LEN           => 20;
 use constant NF_IPv4_PROTOCOL_ICMPv4       => 0x01;
-use constant NF_IPv4_PROTOCOL_IGMPv4       => 0x02;
+use constant NF_IPv4_PROTOCOL_IGMP         => 0x02;
 use constant NF_IPv4_PROTOCOL_IPIP         => 0x04;
 use constant NF_IPv4_PROTOCOL_TCP          => 0x06;
 use constant NF_IPv4_PROTOCOL_EGP          => 0x08;
@@ -273,7 +273,7 @@ sub computeChecksums {
 
 our $Next = {
    NF_IPv4_PROTOCOL_ICMPv4()       => 'ICMPv4',
-   NF_IPv4_PROTOCOL_IGMPv4()       => 'IGMPv4',
+   NF_IPv4_PROTOCOL_IGMP()         => 'IGMP',
    NF_IPv4_PROTOCOL_IPIP()         => 'IPIP',
    NF_IPv4_PROTOCOL_TCP()          => 'TCP',
    NF_IPv4_PROTOCOL_EGP()          => 'EGP',
@@ -513,7 +513,7 @@ Load them: use Net::Frame::Layer::IPv4 qw(:consts);
 
 =item B<NF_IPv4_PROTOCOL_ICMPv4>
 
-=item B<NF_IPv4_PROTOCOL_IGMPv4>
+=item B<NF_IPv4_PROTOCOL_IGMP>
 
 =item B<NF_IPv4_PROTOCOL_IPIP>
 
@@ -587,7 +587,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2009, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2011, Patrice E<lt>GomoRE<gt> Auffret
       
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.
