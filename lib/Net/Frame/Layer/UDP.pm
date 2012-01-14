@@ -1,5 +1,5 @@
 #
-# $Id: UDP.pm 333 2011-02-16 10:47:33Z gomor $
+# $Id: UDP.pm 347 2012-01-14 08:50:01Z gomor $
 #
 package Net::Frame::Layer::UDP;
 use strict;
@@ -32,13 +32,15 @@ __PACKAGE__->cgBuildAccessorsScalar(\@AS);
 no strict 'vars';
 
 sub new {
-   shift->SUPER::new(
+   my $self = shift->SUPER::new(
       src      => getRandomHighPort(),
       dst      => 0,
       length   => 0,
       checksum => 0,
       @_,
    );
+
+   return $self;
 }
 
 sub pack {
@@ -51,7 +53,7 @@ sub pack {
       $self->[$__checksum],
    ) or return;
 
-   $self->[$__raw];
+   return $self->[$__raw];
 }
 
 sub unpack {
@@ -64,7 +66,7 @@ sub unpack {
 
    my ($src, $dst, $len, $checksum, $payload) =
       $self->SUPER::unpack('nnnn a*', $self->[$__raw])
-         or return undef;
+         or return;
 
    $self->[$__src]      = $src;
    $self->[$__dst]      = $dst;
@@ -72,14 +74,36 @@ sub unpack {
    $self->[$__checksum] = $checksum;
    $self->[$__payload]  = $payload;
 
-   $self;
+   return $self;
 }
 
-sub getLength { NF_UDP_HDR_LEN }
+sub getLength {
+   return NF_UDP_HDR_LEN;
+}
 
 sub computeLengths {
    my $self = shift;
-   $self->[$__length] = $self->getLength + $self->getPayloadLength;
+   my ($layers) = @_;
+
+   my $len = $self->getLength;
+
+   my $start = 0;
+   my $last  = $self;
+   for my $l (@$layers) {
+      $last = $l;
+      if (! $start) {
+	 $start++ if $l->layer eq 'UDP';
+         next;
+      }
+      $len += $l->getLength;
+   }
+
+   if (defined($last->payload) && length($last->payload)) {
+      $len += length($last->payload);
+   }
+
+   $self->[$__length] = $len;
+
    return 1;
 }
 
@@ -106,9 +130,24 @@ sub computeChecksums {
       $self->[$__src], $self->[$__dst], $self->[$__length], 0)
          or return;
 
-   my $last = $layers->[-1];
+   my $start   = 0;
+   my $last    = $self;
+   my $payload = '';
+   for my $l (@$layers) {
+      $last = $l;
+      if (! $start) {
+	 $start++ if $l->layer eq 'UDP';
+         next;
+      }
+      $payload .= $l->pack;
+   }
+
    if (defined($last->payload) && length($last->payload)) {
-      $phpkt .= $self->SUPER::pack('a*', $last->payload)
+      $payload .= $last->payload;
+   }
+
+   if (length($payload)) {
+      $phpkt .= $self->SUPER::pack('a*', $payload)
          or return;
    }
 
@@ -118,6 +157,7 @@ sub computeChecksums {
 }
 
 our $Next = {
+   53   => 'DNS',
    67   => 'DHCP',
    68   => 'DHCP',
    520  => 'RIPv1',
@@ -132,25 +172,26 @@ sub encapsulate {
 
 sub getKey {
    my $self = shift;
-   $self->layer.':'.$self->[$__src].'-'.$self->[$__dst];
+   return $self->layer.':'.$self->[$__src].'-'.$self->[$__dst];
 }
 
 sub getKeyReverse {
    my $self = shift;
-   $self->layer.':'.$self->[$__dst].'-'.$self->[$__src];
+   return $self->layer.':'.$self->[$__dst].'-'.$self->[$__src];
 }
 
 sub match {
    my $self = shift;
    my ($with) = @_;
-   1;
+   return 1;
 }
 
 sub print {
    my $self = shift;
 
    my $l = $self->layer;
-   sprintf
+
+   return sprintf
       "$l: src:%d  dst:%d  length:%d  checksum:0x%02x",
          $self->[$__src], $self->[$__dst], $self->[$__length],
          $self->[$__checksum];

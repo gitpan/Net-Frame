@@ -1,5 +1,5 @@
 #
-# $Id: TCP.pm 333 2011-02-16 10:47:33Z gomor $
+# $Id: TCP.pm 347 2012-01-14 08:50:01Z gomor $
 #
 package Net::Frame::Layer::TCP;
 use strict; use warnings;
@@ -54,7 +54,7 @@ __PACKAGE__->cgBuildAccessorsScalar(\@AS);
 no strict 'vars';
 
 sub new {
-   shift->SUPER::new(
+   my $self = shift->SUPER::new(
       src      => getRandomHighPort(),
       dst      => 0,
       seq      => getRandom32bitsInt(),
@@ -68,6 +68,8 @@ sub new {
       options  => '',
       @_,
    );
+
+   return $self;
 }
 
 sub pack {
@@ -136,10 +138,8 @@ sub getOptionsLength {
    my $self = shift;
    my $gLen = $self->getLength;
    my $hLen = NF_TCP_HDR_LEN;
-   $gLen > $hLen ? $gLen - $hLen : 0;
+   return $gLen > $hLen ? $gLen - $hLen : 0;
 }
-
-sub getPayloadLength { shift->SUPER::getPayloadLength }
 
 sub computeLengths {
    my $self = shift;
@@ -148,24 +148,44 @@ sub computeLengths {
 
    my $hLen = NF_TCP_HDR_LEN;
    $self->[$__off] = ($hLen + $optLen) / 4;
+
+   return 1;
 }
 
 sub computeChecksums {
    my $self = shift;
    my ($layers) = @_;
 
-   my $payloadLength = $self->getLength + $self->getPayloadLength;
+   my $len = $self->getLength;
+
+   my $start   = 0;
+   my $last    = $self;
+   my $payload = '';
+   for my $l (@$layers) {
+      $last = $l;
+      if (! $start) {
+         $start++ if $l->layer eq 'TCP';
+         next;
+      }
+      $len     += $l->getLength;
+      $payload .= $l->pack;
+   }
+
+   if (defined($last->payload) && length($last->payload)) {
+      $len     += length($last->payload);
+      $payload .= $last->payload;
+   }
 
    my $phpkt;
    for my $l (@$layers) {
       if ($l->layer eq 'IPv4') {
          $phpkt = $self->SUPER::pack('a4a4CCn',
-            inetAton($l->src), inetAton($l->dst), 0, 6, $payloadLength);
+            inetAton($l->src), inetAton($l->dst), 0, 6, $len);
          last;
       }
       elsif ($l->layer eq 'IPv6') {
          $phpkt = $self->SUPER::pack('a*a*NnCC',
-            inet6Aton($l->src), inet6Aton($l->dst), $payloadLength, 0, 0, 6);
+            inet6Aton($l->src), inet6Aton($l->dst), $len, 0, 0, 6);
          last;
       }
    }
@@ -183,9 +203,8 @@ sub computeChecksums {
          or return;
    }
 
-   my $last = $layers->[-1];
-   if (defined($last->payload) && length($last->payload)) {
-      $phpkt .= $self->SUPER::pack('a*', $last->payload)
+   if (length($payload)) {
+      $phpkt .= $self->SUPER::pack('a*', $payload)
          or return;
    }
 
@@ -445,7 +464,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2011, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2012, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.
