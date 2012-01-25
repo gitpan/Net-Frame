@@ -1,5 +1,5 @@
 #
-# $Id: UDP.pm 347 2012-01-14 08:50:01Z gomor $
+# $Id: UDP.pm 349 2012-01-20 08:32:12Z gomor $
 #
 package Net::Frame::Layer::UDP;
 use strict;
@@ -157,11 +157,6 @@ sub computeChecksums {
 }
 
 our $Next = {
-   53   => 'DNS',
-   67   => 'DHCP',
-   68   => 'DHCP',
-   520  => 'RIPv1',
-   1985 => 'HSRP',
 };
 
 sub encapsulate {

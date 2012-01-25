@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Net-Frame
-version:            1.08
+version:            1.09
 abstract:           the base framework for frame crafting
 author:
     - GomoR <gomor-cpan_at_gomor.org>
