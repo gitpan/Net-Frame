@@ -1,25 +1,24 @@
---- #YAML:1.0
-name:               Net-Frame
-version:            1.09
-abstract:           the base framework for frame crafting
+---
+abstract: 'the base framework for frame crafting'
 author:
-    - GomoR <gomor-cpan_at_gomor.org>
-license:            artistic
-distribution_type:  module
-configure_requires:
-    ExtUtils::MakeMaker:  0
+  - 'GomoR <gomor-cpan_at_gomor.org>'
 build_requires:
-    ExtUtils::MakeMaker:  0
-requires:
-    Bit::Vector:    0
-    Class::Gomor:   1.00
-    Net::IPv6Addr:  0
-    Socket6:        0
-no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.57_05
+  ExtUtils::MakeMaker: 0
+configure_requires:
+  ExtUtils::MakeMaker: 0
+dynamic_config: 1
+generated_by: 'ExtUtils::MakeMaker version 6.62, CPAN::Meta::Converter version 2.132510'
+license: artistic
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Net-Frame
+no_index:
+  directory:
+    - t
+    - inc
+requires:
+  Bit::Vector: 0
+  Class::Gomor: 1.00
+  Net::IPv6Addr: 0
+version: 1.10

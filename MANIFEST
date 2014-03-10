@@ -36,4 +36,5 @@ t/09-tcp.t
 t/10-null.t
 t/11-udp.t
 t/12-ppp.t
-META.yml                                 Module meta-data (added by MakeMaker)
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)

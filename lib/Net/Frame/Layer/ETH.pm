@@ -1,5 +1,5 @@
 #
-# $Id: ETH.pm 347 2012-01-14 08:50:01Z gomor $
+# $Id: ETH.pm 353 2014-03-10 12:25:04Z gomor $
 #
 package Net::Frame::Layer::ETH;
 use strict;
@@ -405,7 +405,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2012, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2014, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.

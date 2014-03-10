@@ -1,5 +1,5 @@
 #
-# $Id: Layer.pm 347 2012-01-14 08:50:01Z gomor $
+# $Id: Layer.pm 353 2014-03-10 12:25:04Z gomor $
 #
 package Net::Frame::Layer;
 use strict;
@@ -95,9 +95,66 @@ sub dump { CORE::unpack('H*', shift->raw) }
 # Useful subroutines
 #
 
-use Socket;
-use Socket6 qw(NI_NUMERICHOST NI_NUMERICSERV inet_pton inet_ntop getaddrinfo
-   getnameinfo);
+# load AF_INET and default imports from Socket.  Safe back to at least 5.8.8
+use Socket qw(:DEFAULT AF_INET);
+BEGIN {
+    # imports that may or may not be in Socket.
+    my @imports = (
+        qw(AF_INET6 NI_NUMERICHOST NI_NUMERICSERV getaddrinfo getnameinfo));
+    my @socket6_imports;
+
+    # This might be overkill, but I'm not certain that all these imports
+    # were added to Socket at the same time.
+    for my $export (@imports) {
+        eval { Socket->import($export); };
+        if ($@) {
+            push @socket6_imports, $export;
+        }
+    }
+
+    eval {
+        # Test to see if the sub works.
+        # Socket::inet_ntop() may exist, but die with:
+        # Socket::inet_ntop not implemented on this architecture
+        Socket::inet_ntop( AF_INET, "\0\0\0\0" );    # test
+        Socket->import('inet_ntop');    # import if the test doesn't die
+    };
+    if ($@) {
+        push @socket6_imports, 'inet_ntop';
+    }
+    eval {
+        # Test to see if the sub works.
+        # Socket::inet_pton() may exist, but die with:
+        # Socket::inet_pton not implemented on this architecture
+        Socket::inet_pton( AF_INET, '0.0.0.0' );    # test
+        Socket->import('inet_pton');    # import if the test doesn't die
+    };
+    if ($@) {
+
+        # *sigh* the Socket6 version of inet_pton doesn't always behave like
+        # the version in Socket.
+        {
+            no warnings 'redefine';
+            no strict 'refs';
+            *{ __PACKAGE__ . "::inet_pton" } = sub {
+                if ( $_[0] == AF_INET ) {
+                    return Socket::inet_aton( $_[1] );
+                } else {
+                    return Socket::inet_pton(@_);
+                }
+            };
+        }
+    }
+
+    if (@socket6_imports) {
+
+        # something we want wasn't found in Socket time to try Socket6
+        eval { require Socket6 };
+        die $@ if $@;
+        Socket6->import(@socket6_imports);
+    }
+}
+
 require Net::IPv6Addr;
 
 sub getHostIpv4Addr {
@@ -130,7 +187,7 @@ sub getHostIpv6Addr {
    return undef unless $name;
    return $name if Net::IPv6Addr::is_ipv6($name);
 
-   my @res = getaddrinfo($name, 'ssh', Socket6::AF_INET6(), SOCK_STREAM);
+   my @res = getaddrinfo($name, 'ssh', AF_INET6, SOCK_STREAM);
    if (@res >= 5) {
       my ($ipv6) = getnameinfo($res[3], NI_NUMERICHOST | NI_NUMERICSERV);
       $ipv6 =~ s/%.*$//;
@@ -144,8 +201,8 @@ sub getHostIpv6Addr {
 
 sub inetAton  { inet_aton(shift())                    }
 sub inetNtoa  { inet_ntoa(shift())                    }
-sub inet6Aton { inet_pton(Socket6::AF_INET6(), shift()) }
-sub inet6Ntoa { inet_ntop(Socket6::AF_INET6(), shift()) }
+sub inet6Aton { inet_pton(AF_INET6, shift()) }
+sub inet6Ntoa { inet_ntop(AF_INET6, shift()) }
 
 sub getRandomHighPort {
    my $highPort = int rand 0xffff;
@@ -333,7 +390,7 @@ Patrice E<lt>GomoRE<gt> Auffret
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2012, Patrice E<lt>GomoRE<gt> Auffret
+Copyright (c) 2006-2014, Patrice E<lt>GomoRE<gt> Auffret
 
 You may distribute this module under the terms of the Artistic license.
 See LICENSE.Artistic file in the source distribution archive.
