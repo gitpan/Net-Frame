@@ -1,5 +1,5 @@
 #
-# $Id: Layer.pm 353 2014-03-10 12:25:04Z gomor $
+# $Id: Layer.pm 357 2014-04-08 13:34:04Z gomor $
 #
 package Net::Frame::Layer;
 use strict;
@@ -130,20 +130,7 @@ BEGIN {
         Socket->import('inet_pton');    # import if the test doesn't die
     };
     if ($@) {
-
-        # *sigh* the Socket6 version of inet_pton doesn't always behave like
-        # the version in Socket.
-        {
-            no warnings 'redefine';
-            no strict 'refs';
-            *{ __PACKAGE__ . "::inet_pton" } = sub {
-                if ( $_[0] == AF_INET ) {
-                    return Socket::inet_aton( $_[1] );
-                } else {
-                    return Socket::inet_pton(@_);
-                }
-            };
-        }
+        push @socket6_imports, 'inet_pton';
     }
 
     if (@socket6_imports) {
@@ -199,8 +186,8 @@ sub getHostIpv6Addr {
    undef;
 }
 
-sub inetAton  { inet_aton(shift())                    }
-sub inetNtoa  { inet_ntoa(shift())                    }
+sub inetAton  { inet_aton(shift()) }
+sub inetNtoa  { inet_ntoa(shift()) }
 sub inet6Aton { inet_pton(AF_INET6, shift()) }
 sub inet6Ntoa { inet_ntop(AF_INET6, shift()) }
 
@@ -214,10 +201,7 @@ sub getRandom32bitsInt { int rand 0xffffffff }
 sub getRandom16bitsInt { int rand 0xffff     }
 
 sub convertMac {
-   my ($mac) = @_;
-   $mac =~ s/(..)/$1:/g;
-   $mac =~ s/:$//;
-   lc($mac);
+   return lc(join(':', $_[0] =~ /../g));
 }
 
 sub inetChecksum {
@@ -228,7 +212,8 @@ sub inetChecksum {
    my $nshort   = $len / 2;
    my $checksum = 0;
    $checksum   += $_ for CORE::unpack("S$nshort", $phpkt);
-   $checksum   += CORE::unpack('C', substr($phpkt, $len - 1, 1)) if $len % 2;
+   # XXX: This line never does anything as the lenth was made even above. Currently testing it breaks nothing.
+   #$checksum   += CORE::unpack('C', substr($phpkt, $len - 1, 1)) if $len % 2;
    $checksum    = ($checksum >> 16) + ($checksum & 0xffff);
 
    CORE::unpack('n',

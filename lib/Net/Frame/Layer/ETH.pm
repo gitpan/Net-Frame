@@ -1,5 +1,5 @@
 #
-# $Id: ETH.pm 353 2014-03-10 12:25:04Z gomor $
+# $Id: ETH.pm 356 2014-04-08 13:15:27Z gomor $
 #
 package Net::Frame::Layer::ETH;
 use strict;
@@ -299,7 +299,7 @@ Object constructor. You can pass attributes that will overwrite default ones. Se
 
 =back
 
-The following are inherited methods. Some of them may be overriden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
+The following are inherited methods. Some of them may be overridden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
 
 =over 4
 

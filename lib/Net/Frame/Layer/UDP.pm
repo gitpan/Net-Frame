@@ -1,5 +1,5 @@
 #
-# $Id: UDP.pm 353 2014-03-10 12:25:04Z gomor $
+# $Id: UDP.pm 356 2014-04-08 13:15:27Z gomor $
 #
 package Net::Frame::Layer::UDP;
 use strict;
@@ -292,7 +292,7 @@ This method is mostly used internally. You pass a B<Net::Frame::Layer::UDP> laye
 
 =back
 
-The following are inherited methods. Some of them may be overriden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
+The following are inherited methods. Some of them may be overridden in this layer, and some others may not be meaningful in this layer. See B<Net::Frame::Layer> for more information.
 
 =over 4
 

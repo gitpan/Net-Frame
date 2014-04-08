@@ -1,5 +1,11 @@
 Revision history for Perl extension Net::Frame.
 
+1.11 Tue Apr  8 15:33:43 CEST 2014
+   - bugfix: https://rt.cpan.org/Public/Bug/Display.html?id=94035
+   - bugfix: on making Socket6 optional, bugfix contributed by Andrew Feren
+   - optimization: convertMac() contributed by Andrew Feren
+   - optimization: inetChecksum() contributed by Andrew Feren
+
 1.10 Mon Mar 10 13:26:53 CET 2014
    - UPDATE: makes Socket6 optional, contributed by Andrew Feren
    - update: copyright notice

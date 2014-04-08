@@ -1,11 +1,11 @@
 #
-# $Id: Frame.pm 353 2014-03-10 12:25:04Z gomor $
+# $Id: Frame.pm 357 2014-04-08 13:34:04Z gomor $
 #
 package Net::Frame;
 use strict;
 use warnings;
 
-our $VERSION = '1.10';
+our $VERSION = '1.11';
 
 1;
 
@@ -68,7 +68,7 @@ Net::Frame - the base framework for frame crafting
 
 B<Net::Frame> is a fork of B<Net::Packet>. The goal here was to greatly simplify the use of the frame crafting framework. B<Net::Packet> does many things undercover, and it was difficult to document all the thingies.
 
-Also, B<Net::Packet> may suffer from unease of use, because frames were assembled using layers stored in L2, L3, L4 and L7 attributes. B<Net::Frame> removes all this, and is splitted in different modules, for those who only want to use part of the framework, and not whole framework.
+Also, B<Net::Packet> may suffer from unease of use, because frames were assembled using layers stored in L2, L3, L4 and L7 attributes. B<Net::Frame> removes all this, and is split into different modules, for those who only want to use part of the framework, and not whole framework.
 
 Finally, anyone can create a layer, and put it on his CPAN space, because of the modularity B<Net::Frame> offers. For an example, see B<Net::Frame::Layer::ICMPv4> on my CPAN space.
 

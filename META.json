@@ -4,7 +4,7 @@
       "GomoR <gomor-cpan_at_gomor.org>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.62, CPAN::Meta::Converter version 2.132510",
+   "generated_by" : "ExtUtils::MakeMaker version 6.94, CPAN::Meta::Converter version 2.132510",
    "license" : [
       "artistic_1"
    ],
@@ -39,5 +39,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "1.10"
+   "version" : "1.11"
 }
